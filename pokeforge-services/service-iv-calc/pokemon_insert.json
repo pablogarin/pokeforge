@@ -1,0 +1,3 @@
+{
+    "query": "mutation { upsertPokemon(input: { pokemonId: 25, customNickname: \"Volt\", level: 25, gender: \"Male\", nature: \"Timid\", isInRooster: true, stats: { hp: 60, attack: 35, defense: 25, spAttack: 42, spDefense: 32, speed: 68 }, knownMoveIds:[]  }) { id customNickname ivRangeAttack ivRangeSpeed knownMoves { name type } pokemonReference { name baseSpeed } } }"
+}

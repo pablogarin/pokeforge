@@ -1,5 +1,5 @@
 from typing import List
-from .types import GlobalPokemon
+from .types import GlobalPokemon, UserPokemon
 from database import PokemonRepository
 
 
@@ -17,6 +17,41 @@ def resolve_global_pokedex() -> List[GlobalPokemon]:
             base_sp_attack=row["base_sp_attack"],
             base_sp_defense=row["base_sp_defense"],
             base_speed=row["base_speed"],
+        )
+        for row in rows
+    ]
+
+
+def resolve_my_collection(include_storage: bool = True) -> List[UserPokemon]:
+    # FIXME: this is a temporary placeholder while I work on auth
+    user_id = 1
+
+    rows = PokemonRepository.fetch_user_collection(
+        user_id=user_id, include_storage=include_storage
+    )
+    return [
+        UserPokemon(
+            id=row["id"],
+            user_id=row["user_id"],
+            pokemon_id=row["pokemon_id"],
+            custom_nickname=row["custom_nickname"] if row["custom_nickname"] else None,
+            level=row["level"],
+            gender=row["gender"],
+            nature=row["nature"],
+            is_in_rooster=row["is_in_rooster"],
+            current_hp=row["current_hp"],
+            current_attack=row["current_attack"],
+            current_defense=row["current_defense"],
+            current_sp_attack=row["current_sp_attack"],
+            current_sp_defense=row["current_sp_defense"],
+            current_speed=row["current_speed"],
+            iv_range_hp=row["iv_range_hp"],
+            iv_range_attack=row["iv_range_attack"],
+            iv_range_defense=row["iv_range_defense"],
+            iv_range_sp_attack=row["iv_range_sp_attack"],
+            iv_range_sp_defense=row["iv_range_sp_defense"],
+            iv_range_speed=row["iv_range_speed"],
+            known_move_ids=row["known_move_ids"],
         )
         for row in rows
     ]
