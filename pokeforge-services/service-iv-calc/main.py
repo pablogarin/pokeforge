@@ -9,8 +9,7 @@ from graphql_engine import schema
 from schemas import IVCalculationRequest, IVCalculationResponse, IVRangeResult
 from seed_scraper import run_ingestion_pipeline
 
-from config import DB_PARAMS
-
+from database import PokemonRepository
 
 # Authority Matrix for Gen-3 Natures [Increased Stat Column, Decreased Stat Column]
 NATURE_MODIFIERS = {
@@ -80,12 +79,7 @@ app.include_router(graphql_app, prefix="/graphql")
 
 @app.post("/api/v1/iv/calculate", response_model=IVCalculationResponse)
 async def calculate_pokemon_iv(payload: IVCalculationRequest):
-    conn = psycopg2.connect(**DB_PARAMS, cursor_factory=RealDictCursor)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM global_pokemons WHERE id = %s", (payload.pokemon_id,))
-    base_data = cursor.fetchone()
-    cursor.close()
-    conn.close()
+    base_data = PokemonRepository.fetch_base_stats_by_id(payload.pokemon_id)
 
     if not base_data:
         raise HTTPException(
