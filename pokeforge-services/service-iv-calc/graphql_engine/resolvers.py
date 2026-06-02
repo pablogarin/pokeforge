@@ -1,18 +1,11 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from typing import List
 from .types import GlobalPokemon
-from config import DB_PARAMS
+from database import PokemonRepository
 
 
 def resolve_global_pokedex() -> List[GlobalPokemon]:
     try:
-        conn = psycopg2.connect(**DB_PARAMS, cursor_factory=RealDictCursor)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM global_pokemons ORDER BY id ASC")
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
+        rows = PokemonRepository.fetch_all_global_pokemons()
 
         return [
             GlobalPokemon(
