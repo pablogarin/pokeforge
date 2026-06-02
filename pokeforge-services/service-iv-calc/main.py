@@ -1,21 +1,15 @@
-import os
 import math
+import psycopg2
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-import psycopg2
 from psycopg2.extras import RealDictCursor
+from strawberry.fastapi import GraphQLRouter
 
+from graphql_engine import schema
 from schemas import IVCalculationRequest, IVCalculationResponse, IVRangeResult
 from seed_scraper import run_ingestion_pipeline
 
-
-DB_PARAMS = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": int(os.getenv("DB_PORT", 5432)),
-    "user": os.getenv("DB_USER", "forge_admin"),
-    "password": os.getenv("DB_PASSWORD", "forge_secure_password123"),
-    "database": os.getenv("DB_NAME", "pokeforge"),
-}
+from config import DB_PARAMS
 
 
 # Authority Matrix for Gen-3 Natures [Increased Stat Column, Decreased Stat Column]
@@ -79,7 +73,9 @@ def reverse_engineer_stat_ivs(
     return IVRangeResult(min_iv=matching_ivs[0], max_iv=matching_ivs[-1])
 
 
+graphql_app = GraphQLRouter(schema)
 app = FastAPI(title="PokeForge IV Calculator")
+app.include_router(graphql_app, prefix="/graphql")
 
 
 @app.post("/api/v1/iv/calculate", response_model=IVCalculationResponse)
@@ -130,4 +126,3 @@ async def calculate_pokemon_iv(payload: IVCalculationRequest):
         )
 
     return IVCalculationResponse(status="success", iv_ranges=results)
-

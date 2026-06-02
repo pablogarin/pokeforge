@@ -1,0 +1,26 @@
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from typing import List
+from .types import GlobalPokemon
+from main import DB_PARAMS
+
+
+def resolve_global_pokedex() -> List[GlobalPokemon]:
+    try:
+        conn = psycopg2.connect(...DB_PARAMS, cursor_factory=RealDictCursor)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM global_pokemon ORDER BY id ASC")
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return [
+                GlobalPokemon(
+                    id = row["id"],
+                    name = row["name"],
+                ) for row in rows
+        ]
+
+    except Exception as err:
+        print(f"Error getting pokemons from database: {err}")
+        return []
