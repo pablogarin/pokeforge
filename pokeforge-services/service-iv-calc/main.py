@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from strawberry.fastapi import GraphQLRouter
 
@@ -12,8 +13,17 @@ async def get_graphql_context(request: Request):
     return GraphQLContext(request=request)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    pokemons = PokemonRepository.fetch_all_global_pokemons()
+    # In FR/LG there are only 3 gen of pokemons, or 386 total pokemons
+    if len(pokemons) < 386:
+        run_ingestion_pipeline()
+    yield
+
+
 graphql_app = GraphQLRouter(schema, context_getter=get_graphql_context)
-app = FastAPI(title="PokeForge IV Calculator")
+app = FastAPI(title="PokeForge IV Calculator", lifespan=lifespan)
 app.include_router(graphql_app, prefix="/graphql")
 
 
