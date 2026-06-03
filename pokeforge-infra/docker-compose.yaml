@@ -13,9 +13,53 @@ services:
         - "5432:5432"
       volumes:
         - pgdata:/var/lib/postgresql/data
-        - ./migrations:/docker-entrypoint-initdb.d
+        - ../pokeforge-db/migrations:/docker-entrypoint-initdb.d
       networks:
         - pokeforge_network
+
+  service-iv-calc:
+    build:
+      # UPDATED PATH: Points directly to the sibling calculation microservice
+      context: ../pokeforge-services/service-iv-calc
+      dockerfile: Dockerfile
+    container_name: pokeforge_iv_calc
+    restart: always
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=forge_admin
+      - DB_PASSWORD=forge_secure_password123
+      - DB_NAME=pokeforge
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - pokeforge_network
+
+  service-auth-oauth:
+    build:
+      context: ../pokeforge-services/service-auth-oauth
+      dockerfile: Dockerfile
+    container_name: pokeforge_auth_oauth
+    restart: always
+    environment:
+      - DB_HOST=postgres # Targets the database container name inside the shared bridge
+      - DB_PORT=5432
+      - DB_USER=forge_admin
+      - DB_PASSWORD=forge_secure_password123
+      - DB_NAME=pokeforge
+      # Injects secrets directly from your local .env configuration sheet
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+    networks:
+      - pokeforge_network
 
 volumes:
   pgdata:

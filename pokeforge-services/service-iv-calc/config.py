@@ -8,3 +8,5 @@ DB_PARAMS = {
     "password": os.getenv("DB_PASSWORD", "forge_secure_password123"),
     "database": os.getenv("DB_NAME", "pokeforge"),
 }
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")

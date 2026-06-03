@@ -2,15 +2,8 @@ import psycopg2
 import pandas as pd
 import requests
 from io import StringIO
-
-# 1. Database Connection String Parameters
-DB_PARAMS = {
-    "host": "localhost",
-    "port": 5432,
-    "user": "forge_admin",
-    "password": "forge_secure_password123",
-    "database": "pokeforge",
-}
+from database import PokemonRepository
+from database.models import PokemonDomainModel
 
 # 2. Raw Sourcing GitHub Target Endpoints
 POKEMON_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon.csv"
@@ -57,10 +50,6 @@ def run_ingestion_pipeline():
 
     # Filter out everything past Generation 3 (National Dex limit for FireRed is Deoxys = 386)
     df_pkmn = df_pkmn[df_pkmn["id"] <= 386]
-
-    # Establish connection mapping hooks into local running PostgreSQL container
-    conn = psycopg2.connect(**DB_PARAMS)
-    cursor = conn.cursor()
 
     print("Beginning structural parse operations into Postgres context...")
     try:
@@ -112,46 +101,25 @@ def run_ingestion_pipeline():
                 pkmn_stats[pkmn_stats["stat_id"] == 6]["base_stat"].values[0]
             )
 
-            # Execute SQL Upsert query into your schema
-            cursor.execute(
-                """
-                INSERT INTO global_pokemons 
-                    (id, name, types, base_hp, base_attack, base_defense, base_sp_attack, base_sp_defense, base_speed)
-                VALUES (%s, %s, %s::pokemon_element_type[], %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (id) DO UPDATE SET
-                    name = EXCLUDED.name,
-                    types = EXCLUDED.types,
-                    base_hp = EXCLUDED.base_hp,
-                    base_attack = EXCLUDED.base_attack,
-                    base_defense = EXCLUDED.base_defense,
-                    base_sp_attack = EXCLUDED.base_sp_attack,
-                    base_sp_defense = EXCLUDED.base_sp_defense,
-                    base_speed = EXCLUDED.base_speed;
-            """,
-                (
-                    pkmn_id,
-                    pkmn_name,
-                    type_list,
-                    base_hp,
-                    base_atk,
-                    base_def,
-                    base_sp_atk,
-                    base_sp_def,
-                    base_speed,
-                ),
+            # Execute upsert operation
+            pokemon = PokemonDomainModel(
+                id=pkmn_id,
+                name=pkmn_name,
+                types=type_list,
+                base_hp=base_hp,
+                base_attack=base_atk,
+                base_defense=base_def,
+                base_sp_attack=base_sp_atk,
+                base_sp_defense=base_sp_def,
+                base_speed=base_speed,
             )
-
-        conn.commit()
+            PokemonRepository.upsert_pokemon(pokemon)
         print(
             f"Success! Ingested and synchronized exactly {len(df_pkmn)} Generation 3 reference entries."
         )
 
     except Exception as e:
-        conn.rollback()
         print(f"Ingestion crashed: {e}")
-    finally:
-        cursor.close()
-        conn.close()
 
 
 if __name__ == "__main__":

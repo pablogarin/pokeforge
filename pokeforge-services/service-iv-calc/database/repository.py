@@ -1,6 +1,6 @@
 from typing import Any, List, Dict, Optional, Tuple
 from .connection import get_db_cursor
-from .models import UserPokemonDomainModel
+from .models import UserPokemonDomainModel, PokemonDomainModel
 
 
 MOVES_TABLE = "global_moves"
@@ -44,6 +44,34 @@ QUERY_SELECT_ALL_POKEMON = (
 
 QUERY_SELECT_POKEMON_BY_ID = (
     f"SELECT * FROM {POKEMON_TABLE} WHERE {POKEMON_ID_FIELD} = %s;"
+)
+
+POKEMON_FIELD_LIST = {
+    "id": "%s",
+    "name": "%s",
+    "types": "%s::pokemon_element_type[]",
+    "base_hp": "%s",
+    "base_attack": "%s",
+    "base_defense": "%s",
+    "base_sp_attack": "%s",
+    "base_sp_defense": "%s",
+    "base_speed": "%s",
+}
+
+QUERY_UPSERT_POKEMON = (
+    f"INSERT INTO {POKEMON_TABLE} "
+    f"({','.join(POKEMON_FIELD_LIST.keys())}) "
+    f"VALUES ({','.join(POKEMON_FIELD_LIST.values())}) "
+    f"ON CONFLICT ({POKEMON_ID_FIELD}) DO UPDATE SET "
+    f"{
+        ','.join(
+            [
+                f'{key} = EXCLUDED.{key}'
+                for key in POKEMON_FIELD_LIST.keys()
+                if key is not POKEMON_ID_FIELD
+            ]
+        )
+    };"
 )
 
 QUERY_SELECT_MOVES_BY_IDS = (
@@ -131,3 +159,11 @@ class PokemonRepository:
                 PokemonRepository.extract_pokemon_upsert_set_from_model(pokemon),
             )
             return cursor.fetchone()
+
+    @staticmethod
+    def upsert_pokemon(pokemon: PokemonDomainModel) -> None:
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                QUERY_UPSERT_POKEMON,
+                tuple(getattr(pokemon, key) for key in POKEMON_FIELD_LIST.keys()),
+            )

@@ -1,3 +1,4 @@
+from strawberry.types import Info
 from typing import List
 from .types import GlobalPokemon, UserPokemon
 from database import PokemonRepository
@@ -22,9 +23,13 @@ def resolve_global_pokedex() -> List[GlobalPokemon]:
     ]
 
 
-def resolve_my_collection(include_storage: bool = True) -> List[UserPokemon]:
-    # FIXME: this is a temporary placeholder while I work on auth
-    user_id = 1
+def resolve_my_collection(
+    info: Info, include_storage: bool = True
+) -> List[UserPokemon]:
+    user_id = info.context.user_id
+
+    if not user_id:
+        raise Exception("Access denied")
 
     rows = PokemonRepository.fetch_user_collection(
         user_id=user_id, include_storage=include_storage

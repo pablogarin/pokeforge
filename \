@@ -1,18 +1,17 @@
-from fastapi import FastAPI, HTTPException, Request
-from strawberry.fastapi import GraphQLRouter
+import jwt
+from fastapi import FastAPI, HTTPException, Cookie, Depends, Request
+from strawberry.fastapi import GraphQLRouter, BaseContext
+from typing import Optional
 
+from config import JWT_SECRET_KEY
 from database import PokemonRepository
-from graphql_engine import GraphQLContext, schema
+from graphql_engine import schema
 from schemas import IVCalculationRequest, IVCalculationResponse
 from seed_scraper import run_ingestion_pipeline
 from tools import reverse_engineer_stat_ivs, NATURE_MODIFIERS
 
 
-async def get_graphql_context(request: Request):
-    return GraphQLContext(request=request)
-
-
-graphql_app = GraphQLRouter(schema, context_getter=get_graphql_context)
+graphql_app = GraphQLRouter(schema)
 app = FastAPI(title="PokeForge IV Calculator")
 app.include_router(graphql_app, prefix="/graphql")
 

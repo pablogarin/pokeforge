@@ -30,3 +30,4 @@ typing_extensions==4.15.0
 urllib3==2.7.0
 uvicorn==0.48.0
 strawberry-graphql[fastapi]>=0.215.0
+PyJWT>=2.8.0

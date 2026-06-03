@@ -1,7 +1,8 @@
 import strawberry
-from typing import List, Optional
 from database import PokemonRepository
 from database.models import UserPokemonDomainModel
+from strawberry.types import Info
+from typing import List, Optional
 from .types import UserPokemon
 
 # Import the math formulas from your main script entrypoint
@@ -36,9 +37,12 @@ class UpsertPokemonInput:
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def upsertPokemon(self, input: UpsertPokemonInput) -> UserPokemon:
+    def upsertPokemon(self, info: Info, input: UpsertPokemonInput) -> UserPokemon:
         """Type-safe Mutation that auto-calculates missing IV ranges and returns the complete entity."""
-        mock_user_id = 1
+        user_id = info.context.user_id
+
+        if not user_id:
+            raise Exception("Not authorized")
 
         if len(input.known_move_ids) > 4:
             raise ValueError("A Pokémon cannot maintain more than 4 active moves.")
@@ -94,7 +98,7 @@ class Mutation:
         # 3. Assemble and dispatch domain tracking object
         domain_model = UserPokemonDomainModel(
             id=input.id,
-            user_id=mock_user_id,
+            user_id=user_id,
             pokemon_id=input.pokemon_id,
             custom_nickname=nickname,
             level=input.level,

@@ -1,4 +1,4 @@
-# Use an optimized, secure Python base image
+# Use an optimized, secure Python 3.12 alpine base image matching our IV service
 FROM python:3.12-alpine
 
 # Prevent Python from writing .pyc files and enable unbuffered logging
@@ -14,18 +14,12 @@ RUN apk add --no-cache gcc musl-dev postgresql-dev
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the decoupled application packages and source files
+# Copy application source files
 COPY main.py .
-COPY tools.py .
-COPY config.py .
-COPY seed_scraper.py .
-COPY database/ ./database/
-COPY graphql_engine/ ./graphql_engine/
-COPY schemas/ ./schemas/
 
-# Expose the internal container port
-EXPOSE 8000
+# Expose the internal container port for the authentication microservice
+EXPOSE 8001
 
 # Run the app via Uvicorn pointing to our main FastAPI application entry point
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
 

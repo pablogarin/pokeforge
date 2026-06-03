@@ -3,6 +3,7 @@ from typing import List
 from .types import GlobalPokemon, UserPokemon
 from .resolvers import resolve_global_pokedex, resolve_my_collection
 from .mutations import Mutation
+from .graphql_context import GraphQLContext
 
 
 @strawberry.type
@@ -17,4 +18,4 @@ class Query:
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
-__all__ = ["schema"]
+__all__ = ["schema", "GraphQLContext"]
