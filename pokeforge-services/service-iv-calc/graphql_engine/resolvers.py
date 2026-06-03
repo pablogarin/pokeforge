@@ -1,6 +1,6 @@
 from strawberry.types import Info
 from typing import List
-from .types import GlobalPokemon, UserPokemon
+from .types import GlobalPokemon, UserPokemon, User
 from database import PokemonRepository
 
 
@@ -60,3 +60,22 @@ def resolve_my_collection(
         )
         for row in rows
     ]
+
+
+def resolve_user(info: Info) -> User:
+    user_id = info.context.user_id
+
+    if not user_id:
+        raise Exception("Not authorized")
+
+    user = PokemonRepository.fetch_user(user_id)
+    if not user:
+        raise Exception("User not found")
+
+    return User(
+        id=user["id"],
+        email=user["email"],
+        google_id=user["google_id"],
+        display_name=user["display_name"],
+        avatar_url=user["avatar_url"],
+    )

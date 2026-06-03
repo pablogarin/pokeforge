@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 interface AuthUser {
     userId: number;
+    name: string;
     email: string;
 }
 
@@ -28,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (response.ok) {
                 const data = await response.json();
-                setUser({ userId: data.user_id, email: data.email });
+                setUser({ userId: data.user_id, email: data.email, name: data.name });
             } else {
                 setUser(null);
             }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { LogIn, Zap, Shield } from 'lucide-react';
 
 export default function Login() {

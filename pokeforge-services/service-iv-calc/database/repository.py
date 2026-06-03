@@ -167,3 +167,9 @@ class PokemonRepository:
                 QUERY_UPSERT_POKEMON,
                 tuple(getattr(pokemon, key) for key in POKEMON_FIELD_LIST.keys()),
             )
+
+    @staticmethod
+    def fetch_user(user_id: int) -> Dict:
+        with get_db_cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
+            return cursor.fetchone()

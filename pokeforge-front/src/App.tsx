@@ -1,6 +1,6 @@
-
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
+import Header from './components/header';
 import { Loader2, Shield, LogOut, Zap, LayoutDashboard, Database } from 'lucide-react';
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
     }
     return (
         <>
+            <Header />
             <h1>PokeForge</h1>
         </>
     )

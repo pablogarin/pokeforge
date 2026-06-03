@@ -26,6 +26,15 @@ class GlobalPokemon:
 
 
 @strawberry.type
+class User:
+    id: int
+    email: str
+    google_id: str
+    display_name: str
+    avatar_url: str
+
+
+@strawberry.type
 class UserPokemon:
     id: int
     user_id: int
@@ -83,4 +92,3 @@ class UserPokemon:
             base_sp_defense=row["base_sp_defense"],
             base_speed=row["base_speed"],
         )
-
