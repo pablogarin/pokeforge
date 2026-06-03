@@ -2,6 +2,7 @@ import os
 import jwt
 import datetime
 from fastapi import FastAPI, HTTPException, Response, Cookie
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import requests
 import psycopg2
@@ -23,6 +24,16 @@ DB_PARAMS = {
 
 app = FastAPI(title="PokeForge Authentication Service")
 
+ORIGINS = ["http://localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/api/v1/auth/login")
 def get_google_auth_url():
@@ -38,10 +49,10 @@ def get_google_auth_url():
 
 
 @app.get("/api/v1/auth/callback")
-def handle_google_callback(code: str, response: Response):
+def handle_google_callback(code: str):
     """Step 2: Receives Google's authorization code and provisions the session."""
     # 1. Exchange authorization code for access tokens
-    token_url = "https://googleapis.com"
+    token_url = "https://oauth2.googleapis.com/token"
     token_payload = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -60,11 +71,11 @@ def handle_google_callback(code: str, response: Response):
         )
 
     # 2. Pull user profile information using the access token
-    profile_url = "https://googleapis.com"
+    profile_url = "https://www.googleapis.com/oauth2/v3/userinfo"
     profile_headers = {"Authorization": f"Bearer {access_token}"}
     user_info = requests.get(profile_url, headers=profile_headers).json()
 
-    google_id = user_info.get("id")
+    google_id = user_info.get("sub")
     email = user_info.get("email")
     display_name = user_info.get("name")
     avatar_url = user_info.get("picture")
@@ -100,6 +111,7 @@ def handle_google_callback(code: str, response: Response):
     encoded_jwt = jwt.encode(jwt_payload, JWT_SECRET_KEY, algorithm="HS256")
 
     # 5. Delivery token securely inside an HttpOnly cookie parameter
+    response = RedirectResponse(url="http://localhost:3000/dashboard")
     response.set_cookie(
         key="pokeforge_session",
         value=encoded_jwt,
@@ -110,7 +122,7 @@ def handle_google_callback(code: str, response: Response):
     )
 
     # Redirect back to your future React presentation layer dashboard route shell
-    return RedirectResponse(url="http://localhost:3000/dashboard")
+    return response
 
 
 @app.get("/api/v1/auth/me")
