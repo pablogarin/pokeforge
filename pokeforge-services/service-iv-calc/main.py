@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from strawberry.fastapi import GraphQLRouter
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import PokemonRepository
 from graphql_engine import GraphQLContext, schema
@@ -25,6 +26,15 @@ async def lifespan(app: FastAPI):
 graphql_app = GraphQLRouter(schema, context_getter=get_graphql_context)
 app = FastAPI(title="PokeForge IV Calculator", lifespan=lifespan)
 app.include_router(graphql_app, prefix="/graphql")
+
+ORIGINS = ["http://localhost:3000"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/api/v1/iv/calculate", response_model=IVCalculationResponse)

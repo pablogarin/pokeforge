@@ -1,7 +1,12 @@
 import strawberry
 from typing import List
 from .types import GlobalPokemon, UserPokemon, User
-from .resolvers import resolve_global_pokedex, resolve_my_collection, resolve_user
+from .resolvers import (
+    resolve_global_pokedex,
+    resolve_my_collection,
+    resolve_search_pokemon,
+    resolve_user,
+)
 from .mutations import Mutation
 from .graphql_context import GraphQLContext
 
@@ -15,6 +20,9 @@ class Query:
         resolver=resolve_my_collection
     )
     getUserInfo: User = strawberry.field(resolver=resolve_user)
+    getPokemonByName: List[GlobalPokemon] = strawberry.field(
+        resolver=resolve_search_pokemon
+    )
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)

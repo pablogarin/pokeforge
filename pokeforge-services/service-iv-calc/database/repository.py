@@ -117,13 +117,37 @@ class PokemonRepository:
     def fetch_all_global_pokemons() -> List[Dict]:
         with get_db_cursor() as cursor:
             cursor.execute(QUERY_SELECT_ALL_POKEMON)
-            return cursor.fetchall()
+            rows = cursor.fetchall()
+            for row in rows:
+                if isinstance(row["types"], str):
+                    row["types"] = PokemonRepository._sanitize_pokemon_types(
+                        row["types"]
+                    )
+            return rows
 
     @staticmethod
     def fetch_pokemon_by_id(pokemon_id: int) -> Optional[Dict]:
         with get_db_cursor() as cursor:
             cursor.execute(QUERY_SELECT_POKEMON_BY_ID, (pokemon_id,))
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            if isinstance(row["types"], str):
+                row["types"] = PokemonRepository._sanitize_pokemon_types(row["types"])
+            return row
+
+    @staticmethod
+    def fetch_pokemon_by_partial_name(search_str: str) -> List[Dict]:
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM global_pokemons WHERE name ILIKE %s",
+                (f"%{search_str}%",),
+            )
+            rows = cursor.fetchall()
+            for row in rows:
+                if isinstance(row["types"], str):
+                    row["types"] = PokemonRepository._sanitize_pokemon_types(
+                        row["types"]
+                    )
+            return rows
 
     @staticmethod
     def fetch_moves_by_ids(move_ids: List[int]) -> List[Dict]:
@@ -173,3 +197,7 @@ class PokemonRepository:
         with get_db_cursor() as cursor:
             cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
             return cursor.fetchone()
+
+    @staticmethod
+    def _sanitize_pokemon_types(types: str) -> list:
+        return [t.strip() for t in types.replace("{", "").replace("}", "").split(",")]

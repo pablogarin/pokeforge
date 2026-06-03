@@ -79,3 +79,25 @@ def resolve_user(info: Info) -> User:
         display_name=user["display_name"],
         avatar_url=user["avatar_url"],
     )
+
+
+def resolve_search_pokemon(query: str) -> List[GlobalPokemon]:
+    if not query:
+        return []
+
+    rows = PokemonRepository.fetch_pokemon_by_partial_name(query)
+
+    return [
+        GlobalPokemon(
+            id=row["id"],
+            name=row["name"].capitalize(),
+            types=row["types"],
+            base_hp=row["base_hp"],
+            base_attack=row["base_attack"],
+            base_defense=row["base_defense"],
+            base_sp_attack=row["base_sp_attack"],
+            base_sp_defense=row["base_sp_defense"],
+            base_speed=row["base_speed"],
+        )
+        for row in rows
+    ]
