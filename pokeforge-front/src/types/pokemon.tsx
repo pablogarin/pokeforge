@@ -6,7 +6,7 @@ export type Pokemon = {
     speciesId: number;
     genus: string;
     flavorText: string;
-    types: string[];
+    types: { types: string[] };
     baseHp: number;
     baseAttack: number;
     baseDefense: number;
