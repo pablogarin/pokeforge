@@ -1,6 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    font-size: 12px;
+}
 
 body {
     margin: 0;
@@ -8,5 +14,5 @@ body {
     /* Slate 900 (Dark console theme) */
     color: #f8fafc;
     /* Slate 50 */
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: theme('fontFamily.pokemon');
 }

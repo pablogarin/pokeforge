@@ -16,6 +16,11 @@ class GlobalMove:
 class GlobalPokemon:
     id: int
     name: str
+    height: int
+    weight: int
+    species_id: int
+    genus: str
+    flavor_text: str
     types: List[str]
     base_hp: int
     base_attack: int

@@ -1,3 +1,4 @@
+import math
 import psycopg2
 import pandas as pd
 import requests
@@ -10,7 +11,14 @@ POKEMON_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/
 STATS_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_stats.csv"
 TYPES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_types.csv"
 TYPES_PROSE_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/type_names.csv"
-PAST_TYPES_CSV_URL = "https://github.com/PokeAPI/pokeapi/raw/refs/heads/master/data/v2/csv/pokemon_types_past.csv"
+PAST_TYPES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_types_past.csv"
+FLAVOR_TEXT_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species_flavor_text.csv"
+POKEMON_SPECIES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species.csv"
+POKEMON_NAME_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species_names.csv"
+
+# 6,10,9 Charizard Flavor Text
+LANGUAGE_ID = 9
+VERSION_ID = 10
 
 
 def fetch_csv_as_df(url: str) -> pd.DataFrame:
@@ -47,6 +55,9 @@ def run_ingestion_pipeline():
     df_types = fetch_csv_as_df(TYPES_CSV_URL)
     df_type_names = fetch_csv_as_df(TYPES_PROSE_URL)
     df_past_types = fetch_csv_as_df(PAST_TYPES_CSV_URL)
+    df_flavor_text = fetch_csv_as_df(FLAVOR_TEXT_CSV_URL)
+    df_pokemon_species = fetch_csv_as_df(POKEMON_SPECIES_CSV_URL)
+    df_pokemon_names = fetch_csv_as_df(POKEMON_NAME_CSV_URL)
 
     # Filter out everything past Generation 3 (National Dex limit for FireRed is Deoxys = 386)
     df_pkmn = df_pkmn[df_pkmn["id"] <= 386]
@@ -56,6 +67,18 @@ def run_ingestion_pipeline():
         for _, row in df_pkmn.iterrows():
             pkmn_id = int(row["id"])
             pkmn_name = str(row["identifier"]).lower()
+            pkmn_species = int(row["species_id"])
+            pkmn_height = int(row["height"])
+            pkmn_weight = int(row["weight"])
+            pkmn_evolution_chain = int(
+                df_pokemon_species[(df_pokemon_species["id"] == pkmn_id)][
+                    "evolution_chain_id"
+                ].values[0]
+            )
+            evolves_from = df_pokemon_species[(df_pokemon_species["id"] == pkmn_id)][
+                "evolves_from_species_id"
+            ].values[0]
+            pkmn_evolves_from = None if math.isnan(evolves_from) else int(evolves_from)
 
             past_type = df_past_types[
                 (df_past_types["pokemon_id"] == pkmn_id)
@@ -75,7 +98,7 @@ def run_ingestion_pipeline():
                 # Cross-reference the textual string name for the type id (e.g., 'fire')
                 type_str = df_type_names[
                     (df_type_names["type_id"] == type_id)
-                    & (df_type_names["local_language_id"] == 9)
+                    & (df_type_names["local_language_id"] == LANGUAGE_ID)
                 ]["name"].values[0]
                 type_list.append(
                     type_str.capitalize()
@@ -100,11 +123,26 @@ def run_ingestion_pipeline():
             base_speed = int(
                 pkmn_stats[pkmn_stats["stat_id"] == 6]["base_stat"].values[0]
             )
+            flavor_text = df_flavor_text[
+                (df_flavor_text["species_id"] == pkmn_species)
+                & (df_flavor_text["version_id"] == VERSION_ID)
+                & (df_flavor_text["language_id"] == LANGUAGE_ID)
+            ]["flavor_text"].values[0]
+
+            genus = df_pokemon_names[
+                (df_pokemon_names["pokemon_species_id"] == pkmn_species)
+                & (df_pokemon_names["local_language_id"] == LANGUAGE_ID)
+            ]["genus"].values[0]
 
             # Execute upsert operation
             pokemon = PokemonDomainModel(
                 id=pkmn_id,
                 name=pkmn_name,
+                height=pkmn_height,
+                weight=pkmn_weight,
+                species_id=pkmn_species,
+                genus=genus,
+                flavor_text=flavor_text,
                 types=type_list,
                 base_hp=base_hp,
                 base_attack=base_atk,
@@ -112,6 +150,10 @@ def run_ingestion_pipeline():
                 base_sp_attack=base_sp_atk,
                 base_sp_defense=base_sp_def,
                 base_speed=base_speed,
+                evolution_chain_id=pkmn_evolution_chain,
+                evolves_from_species_id=int(pkmn_evolves_from)
+                if pkmn_evolves_from
+                else None,
             )
             PokemonRepository.upsert_pokemon(pokemon)
         print(

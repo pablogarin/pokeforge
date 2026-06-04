@@ -49,6 +49,11 @@ QUERY_SELECT_POKEMON_BY_ID = (
 POKEMON_FIELD_LIST = {
     "id": "%s",
     "name": "%s",
+    "height": "%s",
+    "weight": "%s",
+    "species_id": "%s",
+    "genus": "%s",
+    "flavor_text": "%s",
     "types": "%s::pokemon_element_type[]",
     "base_hp": "%s",
     "base_attack": "%s",
@@ -56,6 +61,8 @@ POKEMON_FIELD_LIST = {
     "base_sp_attack": "%s",
     "base_sp_defense": "%s",
     "base_speed": "%s",
+    "evolution_chain_id": "%s",
+    "evolves_from_species_id": "%s",
 }
 
 QUERY_UPSERT_POKEMON = (
@@ -137,9 +144,20 @@ class PokemonRepository:
     @staticmethod
     def fetch_pokemon_by_partial_name(search_str: str) -> List[Dict]:
         with get_db_cursor() as cursor:
+            search_arg = f"%{search_str}%"
             cursor.execute(
-                "SELECT * FROM global_pokemons WHERE name ILIKE %s",
-                (f"%{search_str}%",),
+                """
+                SELECT *
+                FROM global_pokemons pk
+                WHERE name ILIKE %s
+                OR EXISTS (
+                    SELECT 1
+                    FROM unnest(pk.types) AS single_type
+                    WHERE single_type::text ILIKE %s
+                )
+                ORDER BY id;
+                """,
+                (search_arg, search_arg),
             )
             rows = cursor.fetchall()
             for row in rows:

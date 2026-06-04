@@ -12,7 +12,7 @@ const Header = ({ panel, onSelect }: HeaderProps) => {
     const { user, isAuthenticated, logout } = useAuth();
 
     return (
-        <nav className="flex justify-between items-center p-4 bg-slate-700">
+        <nav className="fixed w-full flex justify-between items-center p-8 bg-gradient-to-r from-slate-600 to-slate-800">
             <div className="text-xl font-bold tracking-wide flex justify-between items-center">
                 <Zap size={16} className="fill-current animate-bounce text-amber-400" />
                 <div className="bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent pl-4">PokeForge</div>

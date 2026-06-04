@@ -26,10 +26,10 @@ function App() {
         );
     }
     return (
-        <>
+        <div className="flex flex-col h-screen">
             <Header panel={panel} onSelect={setPanel} />
-            <div className="container mx-auto px-4 pt-4">
-                <div className="flex min-h-screen items-center justify-center bg-slate-800">
+            <div className="flex flex-1 px-12 pb-4 pt-28 overflow-hidden">
+                <div className="flex flex-1 p-6 bg-slate-800 overflow-hidden rounded-xl">
                     {panel == PANEL_VIEW.rooster && (
                         <Rooster />
                     )}
@@ -41,7 +41,7 @@ function App() {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

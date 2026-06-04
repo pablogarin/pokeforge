@@ -11,6 +11,11 @@ def resolve_global_pokedex() -> List[GlobalPokemon]:
         GlobalPokemon(
             id=row["id"],
             name=row["name"].capitalize(),
+            height=row["height"],
+            weight=row["weight"],
+            species_id=row["species_id"],
+            genus=row["genus"],
+            flavor_text=row["flavor_text"],
             types=row["types"],
             base_hp=row["base_hp"],
             base_attack=row["base_attack"],
@@ -91,6 +96,11 @@ def resolve_search_pokemon(query: str) -> List[GlobalPokemon]:
         GlobalPokemon(
             id=row["id"],
             name=row["name"].capitalize(),
+            height=row["height"],
+            weight=row["weight"],
+            species_id=row["species_id"],
+            genus=row["genus"],
+            flavor_text=row["flavor_text"],
             types=row["types"],
             base_hp=row["base_hp"],
             base_attack=row["base_attack"],
