@@ -1,9 +1,11 @@
-import { useGraphQL } from '../hooks/useGraphQL';
-import { useEffect, useState } from 'react';
-import { type Pokemon } from '../types/pokemon';
-import PokemonImg from '../components/PokemonImg';
 import { Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+// Custom components
+import ElementTypes from '../components/ElementTypes';
+import PokemonImg from '../components/PokemonImg';
 import PokemonCard from '../components/PokemonCard';
+import { useGraphQL } from '../hooks/useGraphQL';
+import { type Pokemon } from '../types/pokemon';
 
 type Response = {
     getGlobalPokedex: Pokemon[] | undefined;
@@ -71,7 +73,7 @@ const Pokedex = () => {
         executeQuery(querySearch, { search });
     }, [search, executeQuery]);
 
-    const onChangeHandler = (e) => {
+    const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const currentSearch = e.currentTarget.value;
         if (currentSearch == search) return;
         setSearch(currentSearch);
@@ -103,36 +105,23 @@ const Pokedex = () => {
                     <table className="w-full table-auto border-colapse">
                         <thead className="bg-slate-900 text-left">
                             <tr>
-                                <th className="whitespace-nowrap px-4 py-2">N.</th>
+                                <th className="whitespace-nowrap px-4 py-2">No</th>
                                 <th className="whitespace-nowrap px-4 py-2">Pokemon</th>
                                 <th className="whitespace-nowrap px-4 py-2">Type</th>
-                                <th className="whitespace-nowrap px-4 py-2">Base Stats</th>
                             </tr>
                         </thead>
                         <tbody>
                             {pokemonList.map((pokemon: Pokemon) => (
                                 <tr key={pokemon.id} onClick={() => handlePokemonClick(pokemon)}>
-                                    <td className="whitespace-nowrap px-4 py-2">{String(pokemon.id).padStart(3, '0')}</td>
+                                    <td className="whitespace-nowrap px-4 py-2">No{String(pokemon.id).padStart(3, '0')}</td>
                                     <td className="whitespace-nowrap px-4 py-2">
                                         <div className="flex items-center">
-                                            <PokemonImg pokemonId={pokemon.id} />
-                                            <div className="pl-4">{pokemon.name}</div>
+                                            <PokemonImg pokemonId={pokemon.id} height="60" width="60" />
+                                            <div className="pl-4">{pokemon.name.toUpperCase()}</div>
                                         </div>
                                     </td>
-                                    <td className="whitespace-nowrap px-4 py-2">{pokemon.types.join(',')}</td>
-                                    <td>
-                                        <div className="flex flex-col gap-y-2">
-                                            <div className="flex justify-between">
-                                                <div>HP: {pokemon.baseHp}</div>
-                                                <div>Atk: {pokemon.baseAttack}</div>
-                                                <div>Def: {pokemon.baseDefense}</div>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <div>Sp Atk {pokemon.baseSpAttack}</div>
-                                                <div>Sp Def {pokemon.baseSpDefense}</div>
-                                                <div>Speed {pokemon.baseSpeed}</div>
-                                            </div>
-                                        </div>
+                                    <td className="whitespace-nowrap px-4 py-2">
+                                        <ElementTypes types={pokemon.types} />
                                     </td>
                                 </tr>
                             ))}

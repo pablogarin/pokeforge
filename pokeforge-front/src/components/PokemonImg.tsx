@@ -5,7 +5,8 @@ type PokemonImgProps = {
 }
 
 const PokemonImg = ({ pokemonId, height, width }: PokemonImgProps) => {
-    const url = `https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/${pokemonId}.png`;
+    const subfolder = pokemonId > 151 ? 'ruby-sapphire' : 'firered-leafgreen';
+    const url = `https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/versions/generation-iii/${subfolder}/${pokemonId}.png`;
     return (
         <img src={url} height={height} width={width} />
     );
