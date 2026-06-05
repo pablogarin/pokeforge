@@ -30,6 +30,7 @@ services:
       - DB_USER=forge_admin
       - DB_PASSWORD=forge_secure_password123
       - DB_NAME=pokeforge
+      - JWT_SECRET_KEY
     ports:
       - "8000:8000"
     depends_on:
