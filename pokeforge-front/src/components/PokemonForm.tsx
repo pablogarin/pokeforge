@@ -17,7 +17,7 @@ const PokemonForm = () => {
                         {!!pokemon && (<PokemonImg pokemonId={1} width="100" height="100" />)}
                     </div>
                     <div className="flex flex-col justify-center items-start text-[#333]">
-                        <div>POKeMON</div>
+                        <div>POKeMON?</div>
                         <div>_ _ _ _ _ __</div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@ const PokemonForm = () => {
                 )}
             </div>
             <div className="pokemon-form__footer">
-                Footer
+                <button className="border-2 bg-[#E0D858] rounded-[3px] px-4 py-2 [text-shadow:1px_1px_0px_#B8A020,1px_-1px_0px_#B8A020,-1px_1px_0px_#B8A020,-1px_-1px_0px_#B8A020]">SAVE</button>
             </div>
         </div>
     );

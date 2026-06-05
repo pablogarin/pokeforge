@@ -4,8 +4,8 @@
     width: 400px;
     border-radius: 8px;
     border: 4px solid #333;
-    background: repeating-linear-gradient(to bottom, #DFCA91, #F4E7D6 4px);
-    box-shadow: inset 6px 6px 4px rgba(0, 0, 0, 0.5), inset -6px -6px 4px rgba(0, 0, 0, 0.5);
+    background: repeating-linear-gradient(to bottom, #F0E8C0 0px, #F0E8C0 4px, #F8F8F8 4px, #F8F8F8 8px);
+    box-shadow: inset 8px 0px 4px rgba(0, 0, 0, 0.3), inset -8px 0px 4px rgba(0, 0, 0, 0.3);
     margin: 0 auto;
 }
 
@@ -20,7 +20,6 @@
 
 .pokemon-form__header {
     background-color: #0078C0;
-    border-bottom: 4px solid #333;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     padding: 8px 12px;
@@ -39,10 +38,11 @@
     display: flex;
     border-radius: 8px;
     background: #F8F8F8;
-    box-shadow: inset 4px 4px 6px #C0B8B0, inset -4px -4px 6px #C0B8B0, inset -4px 4px 6px #C0B8B0, inset 4px -4px 6px #C0B8B0;
+    box-shadow: inset 4px 4px 2px #C0B8B0, inset -4px -4px 2px #C0B8B0, inset -4px 4px 2px #C0B8B0, inset 4px -4px 2px #C0B8B0;
     width: calc(100% - 60px);
     height: 90px;
     margin: 10px 30px;
+    text-shadow: 1px 1px 0px #3334;
 }
 
 .pokemon-form__body .pokemon-form__pokemon-box__shadow {
@@ -72,4 +72,14 @@
     width: 100%;
 }
 
-.pokemon-form__footer {}
+.pokemon-form__footer {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    border-radius: 4px;
+    background: #C0B8B0;
+    padding: 8px;
+    width: calc(100% - 40px);
+    margin: 16px 20px;
+    box-shadow: inset -2px -2px 0px rgba(0, 0, 0, 0.5), inset 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
