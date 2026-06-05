@@ -7,7 +7,7 @@ const PokemonForm = () => {
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     return (
         <div className="pokemon-form">
-            <h2 className="pokemon-form__header">ADD POKeMON</h2>
+            <h2 className="pokemon-form__header"><span className="font-bold relative top-[-2px] left-[-3px]">&#x271A;</span><span>ADD POKeMON</span></h2>
             <div className="pokemon-form__body">
                 <div className="pokemon-form__pokemon-box">
                     <div className="flex pl-6 justify-center items-center">
@@ -24,48 +24,63 @@ const PokemonForm = () => {
                 <div className="pokemon-form__input-container">
                     <label htmlFor="pokemon">POKEMON:</label>
                     <input className="pokemon-form__input" name="pokemon" type="text" placeholder="Search for your pokemon" />
+                    <div className="pokemon-form__input-dropdown">
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                        <div className="pokemon-form__input-dropdown__item">Pikachu</div>
+                    </div>
                 </div>
                 {!!pokemon && (
                     <>
-                        <div className="flex">
-                            <label htmlFor="nickname"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="nickname" type="text" placeholder="Nickname" />
+                        <div className="pokemon-form__input-container">
+                            <label htmlFor="nickname">NICKNAME:</label>
+                            <input className="pokemon-form__input" name="nickname" type="text" placeholder="Nickname" />
                         </div>
-                        <div className="flex">
-                            <label htmlFor="level"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="level" type="text" placeholder="Level" />
+                        <div className="pokemon-form__input-container">
+                            <label htmlFor="level">LEVEL:</label>
+                            <input className="pokemon-form__input" name="level" type="text" placeholder="Level" />
                         </div>
-                        <div className="flex">
-                            <label htmlFor="gender"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="gender" type="text" placeholder="Gender" />
+                        <div className="pokemon-form__input-container">
+                            <label htmlFor="gender">GENDER:</label>
+                            <input className="pokemon-form__input" name="gender" type="text" placeholder="Gender" />
                         </div>
-                        <div className="flex">
-                            <label htmlFor="nature"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="nature" type="text" placeholder="Nature" />
+                        <div className="pokemon-form__input-container">
+                            <label htmlFor="nature">NATURE:</label>
+                            <input className="pokemon-form__input" name="nature" type="text" placeholder="Nature" />
                         </div>
-                        <div className="flex">
-                            <label htmlFor="hp"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="hp" type="text" placeholder="HP" />
+                        <div className="flex gap-[6px]">
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="hp">HP:</label>
+                                <input className="pokemon-form__input" name="hp" type="text" placeholder="HP" />
+                            </div>
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="attack">ATTACK:</label>
+                                <input className="pokemon-form__input" name="attack" type="text" placeholder="Attack" />
+                            </div>
                         </div>
-                        <div className="flex">
-                            <label htmlFor="attack"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="attack" type="text" placeholder="Attack" />
+                        <div className="flex gap-[6px]">
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="defense">DEFENSE:</label>
+                                <input className="pokemon-form__input" name="defense" type="text" placeholder="Defense" />
+                            </div>
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="spatk">SP ATK:</label>
+                                <input className="pokemon-form__input" name="spatk" type="text" placeholder="Sp Attack" />
+                            </div>
                         </div>
-                        <div className="flex">
-                            <label htmlFor="defense"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="defense" type="text" placeholder="Defense" />
-                        </div>
-                        <div className="flex">
-                            <label htmlFor="spattack"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="spattack" type="text" placeholder="Sp Attack" />
-                        </div>
-                        <div className="flex">
-                            <label htmlFor="spdefense"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="spdefense" type="text" placeholder="Sp Defense" />
-                        </div>
-                        <div className="flex">
-                            <label htmlFor="speed"></label>
-                            <input className="text-[#333] w-full py-2 px-4 rounded-sm border-1 border-[#333]" name="speed" type="text" placeholder="Speed" />
+                        <div className="flex gap-[6px]">
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="spdef">SP DEF:</label>
+                                <input className="pokemon-form__input" name="spdef" type="text" placeholder="Sp Defense" />
+                            </div>
+                            <div className="pokemon-form__input-container">
+                                <label htmlFor="speed">SPEED:</label>
+                                <input className="pokemon-form__input" name="speed" type="text" placeholder="Speed" />
+                            </div>
                         </div>
                     </>
                 )}
