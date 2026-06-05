@@ -1,0 +1,11 @@
+.active-pokemon {
+    background-image: linear-gradient(to bottom,
+            #3A91DE 0px,
+            #3A91DE 34px,
+            #85C2DE 34px,
+            #85C2DE 38px,
+            #3A91DE 38px,
+            #3A91DE 40px,
+            #85C2DE 40px,
+            #85C2DE 60px);
+}

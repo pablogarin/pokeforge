@@ -1,0 +1,28 @@
+.pokeball .pokeball__upper {
+    margin-top: 0px;
+    transition: background-color 0.2s ease, margin-top 0.2s ease;
+}
+
+.pokeball .pokeball__lower {
+    margin-top: -4px;
+    transition: margin-top 0.2s ease;
+}
+
+.pokeball:hover .pokeball__lower {
+    margin-top: 5px;
+}
+
+.pokeball:hover .pokeball__upper {
+    background-color: #F7B27B;
+    margin-top: -4px;
+}
+
+.pokeball_is-open .pokeball__upper {
+    background-color: #F7B27B;
+    margin-top: -4px;
+}
+
+
+.pokeball_is-open .pokeball__lower {
+    margin-top: 5px;
+}

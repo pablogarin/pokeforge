@@ -1,0 +1,39 @@
+.pokemon-tile {
+    box-shadow: inset 3px 3px 2px rgba(255, 255, 255, 0.5), inset -3px -3px 2px rgba(0, 0, 0, 0.5);
+    border-width: 4px;
+    border-color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+    background-image: linear-gradient(to bottom,
+            #3A91DE 0%,
+            #3A91DE 65%,
+            #85C2DE 65%,
+            #85C2DE calc(65% + 3px),
+            #3A91DE calc(65% + 3px),
+            #3A91DE calc(65% + 6px),
+            #85C2DE calc(65% + 6px));
+}
+
+.pokemon-tile:hover {
+    border-color: #FC7233;
+    background-image: linear-gradient(to bottom,
+            #7BD2EE 0%,
+            #7BD2EE 65%,
+            #ADECFE 65%,
+            #ADECFE calc(65% + 3px),
+            #7BD2EE calc(65% + 3px),
+            #7BD2EE calc(65% + 6px),
+            #ADECFE calc(65% + 6px));
+}
+
+.pokemon-tile__container:hover .pokeball .pokeball__upper {
+    background-color: #F7B27B;
+    margin-top: -4px;
+}
+
+
+.pokemon-tile__container:hover .pokeball .pokeball__lower {
+    margin-top: 5px;
+}

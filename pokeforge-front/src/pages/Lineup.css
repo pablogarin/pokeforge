@@ -1,0 +1,19 @@
+.lineup {
+    background-color: #216A63;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.lineup::after {
+    display: block;
+    content: " ";
+    background: repeating-linear-gradient(to bottom, #4BA5A3, #216A63 6px);
+    position: absolute;
+    border-top-left-radius: 35px;
+    top: 10px;
+    left: 50px;
+    height: calc(100% - 28px);
+    width: 100%;
+    z-index: 0;
+}

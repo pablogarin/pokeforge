@@ -14,3 +14,14 @@ export type Pokemon = {
     baseSpDefense: number;
     baseSpeed: number;
 }
+
+export type UserPokemon = {
+    id: number,
+    userId: number,
+    pokemonId: number,
+    customNickname: string,
+    level: number,
+    gender: 'male' | 'female',
+    nature: string,
+    pokemonReference: Pokemon
+}

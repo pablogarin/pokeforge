@@ -3,13 +3,13 @@ import { useAuth } from './context/AuthContext';
 import { type PanelView, PANEL_VIEW } from './types/navigation';
 import Login from './pages/Login';
 import Pokedex from './pages/Pokedex';
-import Rooster from './pages/Rooster';
+import Lineup from './pages/Lineup';
 import IVCalculator from './pages/IVCalculator';
 import Header from './components/header';
 import { Loader2, Shield, LogOut, Zap, LayoutDashboard, Database } from 'lucide-react';
 
 function App() {
-    const [panel, setPanel] = useState<PanelView>(PANEL_VIEW.rooster);
+    const [panel, setPanel] = useState<PanelView>(PANEL_VIEW.lineup);
     const { user, isAuthenticated, isLoading, logout } = useAuth();
 
     if (isLoading) {
@@ -30,8 +30,8 @@ function App() {
             <Header panel={panel} onSelect={setPanel} />
             <div className="flex flex-1 px-12 pb-4 pt-28 overflow-hidden">
                 <div className="flex flex-1 p-6 bg-slate-800 overflow-hidden rounded-xl">
-                    {panel == PANEL_VIEW.rooster && (
-                        <Rooster />
+                    {panel == PANEL_VIEW.lineup && (
+                        <Lineup />
                     )}
                     {panel == PANEL_VIEW.pokedex && (
                         <Pokedex />

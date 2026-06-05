@@ -1,5 +1,5 @@
 export const PANEL_VIEW = {
-    rooster: 'rooster',
+    lineup: 'lineup',
     pokedex: 'pokedex',
     calculator: 'calculator',
 } as const;

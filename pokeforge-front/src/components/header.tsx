@@ -18,8 +18,8 @@ const Header = ({ panel, onSelect }: HeaderProps) => {
                 <div className="bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent pl-4">PokeForge</div>
             </div>
             <ul className="flex gap-x-6 text-sm font-medium">
-                <li className={panel == PANEL_VIEW.rooster && "font-bold text-amber-400"}>
-                    <a href="#rooster" onClick={() => onSelect(PANEL_VIEW.rooster)}>My Team</a>
+                <li className={panel == PANEL_VIEW.lineup && "font-bold text-amber-400"}>
+                    <a href="#lineup" onClick={() => onSelect(PANEL_VIEW.lineup)}>My Team</a>
                 </li>
                 <li className={panel == PANEL_VIEW.pokedex && "font-bold text-amber-400"}>
                     < a href="#pokedex" onClick={() => onSelect(PANEL_VIEW.pokedex)}>PokeDex</a>
