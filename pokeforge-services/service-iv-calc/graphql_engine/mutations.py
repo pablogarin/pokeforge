@@ -28,7 +28,12 @@ class UpsertPokemonInput:
     gender: str
     nature: str
     is_in_rooster: bool
-    stats: StatInput
+    current_hp: int
+    current_attack: int
+    current_defense: int
+    current_sp_attack: int
+    current_sp_defense: int
+    current_speed: int
     known_move_ids: List[int]
     # Made completely optional! If omitted, the engine auto-calculates before insertion
     iv_ranges: Optional[StatInput] = None
@@ -58,18 +63,25 @@ class Mutation:
 
         # 2. RESOLVE OR AUTOMATICALLY CALCULATE IV BOUNDS ON THE FLY
         iv_ranges_computed = {}
-        stats_keys = ["hp", "attack", "defense", "sp_attack", "sp_defense", "speed"]
+        stats_keys = {
+            "hp": "current_hp",
+            "attack": "current_attack",
+            "defense": "current_defense",
+            "sp_attack": "current_sp_attack",
+            "sp_defense": "current_sp_defense",
+            "speed": "current_speed",
+        }
 
-        for stat in stats_keys:
+        for stat, field in stats_keys.items():
             if input.iv_ranges is not None:
                 # If the client already knows the exact IV points, map them straight over
-                val = getattr(input.iv_ranges, stat)
+                val = getattr(input, field)
                 iv_ranges_computed[stat] = [val, val]
             else:
                 # AUTOMATION STEP: Trigger brute-force math loop dynamically
                 is_hp = stat == "hp"
                 base_val = base_data[f"base_{stat}"]
-                user_stat = getattr(input.stats, stat)
+                user_stat = getattr(input, field)
 
                 modifier = 1.0
                 if not is_hp:
@@ -105,12 +117,12 @@ class Mutation:
             gender=input.gender,
             nature=input.nature,
             is_in_rooster=input.is_in_rooster,
-            current_hp=input.stats.hp,
-            current_attack=input.stats.attack,
-            current_defense=input.stats.defense,
-            current_sp_attack=input.stats.sp_attack,
-            current_sp_defense=input.stats.sp_defense,
-            current_speed=input.stats.speed,
+            current_hp=input.current_hp,
+            current_attack=input.current_attack,
+            current_defense=input.current_defense,
+            current_sp_attack=input.current_sp_attack,
+            current_sp_defense=input.current_sp_defense,
+            current_speed=input.current_speed,
             iv_range_hp=iv_ranges_computed["hp"],
             iv_range_attack=iv_ranges_computed["attack"],
             iv_range_defense=iv_ranges_computed["defense"],

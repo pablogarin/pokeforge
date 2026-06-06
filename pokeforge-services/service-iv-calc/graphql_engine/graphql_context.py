@@ -2,13 +2,13 @@ import jwt
 from fastapi import Request
 from strawberry.fastapi import GraphQLRouter, BaseContext
 from typing import Optional
-from config import JWT_SECRET_KEY
 
 
 class GraphQLContext(BaseContext):
-    def __init__(self, request: Request):
+    def __init__(self, request: Request, jwt_secret: str):
         super().__init__()
         self.request = request
+        self.jwt_secret = jwt_secret
 
     @property
     def user_id(self) -> Optional[int]:
@@ -16,7 +16,8 @@ class GraphQLContext(BaseContext):
         if not session_cookie:
             return None
         try:
-            decoded = jwt.decode(session_cookie, JWT_SECRET_KEY, algorithms=["HS256"])
+            decoded = jwt.decode(session_cookie, self.jwt_secret, algorithms=["HS256"])
             return decoded["user_id"]
-        except Exception:
+        except Exception as e:
+            print(f"Error decoding token: {e}")
             return None

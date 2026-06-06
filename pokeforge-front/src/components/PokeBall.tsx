@@ -3,13 +3,14 @@ import './PokeBall.css';
 type PokeBallProps = {
     text?: string;
     isOpen?: boolean;
+    onClick?: any;
 }
 
 
-const PokeBall = ({ text = '', isOpen = false }: PokeBallProps) => {
+const PokeBall = ({ text = '', isOpen = false, onClick = () => null }: PokeBallProps) => {
     return (
         <div className={`relative pokeball${isOpen ? ' pokeball_is-open' : ''}`}>
-            <button className="w-[60px] h-[60px] rounded-full relative z-10">
+            <button className="w-[60px] h-[60px] rounded-full relative z-10" onClick={onClick}>
                 <div className="pokeball__upper bg-[#FF2020] h-[32px] w-[60px] rounded-tl-full rounded-tr-full border-[4px] border-[#333] relative z-10">
                     <div className="w-[20px] h-[20px] border-[4px] border-[#333] rounded-full bg-white absolute right-[16px] top-[17px]"></div>
                 </div>
@@ -18,7 +19,7 @@ const PokeBall = ({ text = '', isOpen = false }: PokeBallProps) => {
                 </div>
             </button>
             {!!text && (<div className="flex items-center h-14 bg-[#7358B5] absolute text-white top-3 left-16 px-8 z-0 rounded-tr-[12px] rounded-br-[12px] border-4 border-[#333]">{text}</div>)}
-        </div>
+        </div >
     );
 }
 

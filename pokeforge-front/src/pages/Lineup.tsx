@@ -1,28 +1,95 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ActivePokemon from '../components/ActivePokemon';
 import PokeBall from '../components/PokeBall';
+import Dialog from '../components/Dialog';
 import PokemonForm from '../components/PokemonForm';
 import CurrentPokemon from '../components/CurrentPokemon';
+import { useGraphQL } from '../hooks/useGraphQL';
 import { type UserPokemon, type Pokemon } from '../types/pokemon';
 import './Lineup.css';
 
+const queryGetMyCollection = `
+query {
+  getMyCollection {
+    customNickname
+    level
+    gender
+    nature
+    isInRooster
+    currentHp
+    currentAttack
+    currentDefense
+    currentSpDefense
+    currentSpeed
+    ivRangeHp
+    ivRangeAttack
+    ivRangeDefense
+    ivRangeSpAttack
+    ivRangeSpDefense
+    ivRangeSpeed
+    knownMoves {
+      name
+      type
+      power
+      pp
+    }
+    pokemonReference {
+      id
+      name
+      speciesId
+    }
+  }
+}`;
+
+type Response = {
+    getMyCollection: UserPokemon[];
+}
+
+const extractLineupFromData = (data: Response) => {
+    if (!data) return [];
+    if (data.getMyCollection !== undefined) return data.getMyCollection;
+    return [];
+}
+
 const Lineup = () => {
-    const [lineup, setLineup] = useState<UserPokemon[]>([]);
-    if (lineup.length == 0) {
-        return (<PokemonForm />);
+    const { data, error, loading, executeQuery } = useGraphQL();
+    const [showForm, setShowForm] = useState<boolean>(false);
+    const [pokemonList, setPokemonList] = useState<UserPokemon[]>([]);
+
+    useEffect(() => {
+        executeQuery(queryGetMyCollection);
+    }, [executeQuery]);
+
+    useEffect(() => {
+        const lineup = extractLineupFromData(data);
+        console.log(lineup);
+        setPokemonList([...lineup]);
+    }, [data]);
+
+    const onSave = (newPokemon?: UserPokemon) => {
+        if (newPokemon) setPokemonList((old) => ([...old, newPokemon]));
+        setShowForm(false);
+    }
+
+    if (!loading && (pokemonList.length == 0 || showForm)) {
+        return (<PokemonForm saveCallback={onSave} />);
+    }
+
+    const handleAddBtnClick = () => {
+        setShowForm(true);
     }
 
     return (
         <div className="lineup w-1/2 h-full min-w-[600px] mx-auto rounded-md">
             <div className="flex flex-col relative h-full p-[12px] z-10">
                 <div className="flex flex-1">
-                    {lineup.length > 0 && (
+                    {pokemonList.length > 0 && (
                         <>
                             <div className="flex flex-1">
-                                <CurrentPokemon pokemon={lineup.pop()} />
+                                <CurrentPokemon pokemon={pokemonList[0]} />
                             </div>
                             <div className="flex flex-1 flex-col">
-                                {lineup.map((pokemon) => (<ActivePokemon key={pokemon.id} pokemon={pokemon} />))}
+                                {pokemonList.slice(1).map((pokemon: UserPokemon) => (<ActivePokemon key={pokemon.id} pokemon={pokemon} />))}
                             </div>
                         </>
                     )}
@@ -30,9 +97,9 @@ const Lineup = () => {
                 <div className="flex items-end w-full">
                     <div className="flex flex-1 justify-start items-center bg-white border-4 border-black text-black h-[60px] px-8">Choose a POKeMON</div>
                     <div className="flex w-[140px] ml-2">
-                        <PokeBall text="ADD" />
+                        <PokeBall text="ADD" onClick={handleAddBtnClick} />
                     </div>
-                    { /* <Dialog title="Welcome!" body="This is your AId for playing pokemon Fire Red and Leaf Green!" hasMore={true} /> */}
+                    {error && (<Dialog title="Error" body={error} hasMore={false} />)}
                 </div>
             </div>
         </div>

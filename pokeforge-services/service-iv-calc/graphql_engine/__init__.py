@@ -1,4 +1,5 @@
 import strawberry
+from strawberry.schema.config import StrawberryConfig
 from typing import List
 from .types import GlobalPokemon, UserPokemon, User
 from .resolvers import (
@@ -25,6 +26,7 @@ class Query:
     )
 
 
-schema = strawberry.Schema(query=Query, mutation=Mutation)
+config = StrawberryConfig(auto_camel_case=True)
+schema = strawberry.Schema(query=Query, mutation=Mutation, config=config)
 
 __all__ = ["schema", "GraphQLContext"]

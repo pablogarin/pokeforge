@@ -8,10 +8,11 @@ from graphql_engine import GraphQLContext, schema
 from schemas import IVCalculationRequest, IVCalculationResponse
 from seed_scraper import run_ingestion_pipeline
 from tools import reverse_engineer_stat_ivs, NATURE_MODIFIERS
+from config import JWT_SECRET_KEY
 
 
 async def get_graphql_context(request: Request):
-    return GraphQLContext(request=request)
+    return GraphQLContext(request=request, jwt_secret=JWT_SECRET_KEY)
 
 
 @asynccontextmanager

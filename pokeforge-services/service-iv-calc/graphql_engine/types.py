@@ -89,6 +89,11 @@ class UserPokemon:
         return GlobalPokemon(
             id=row["id"],
             name=row.get("name", "").capitalize(),
+            height=row["height"],
+            weight=row["weight"],
+            species_id=row["species_id"],
+            genus=row["genus"],
+            flavor_text=row["flavor_text"],
             types=row["types"],
             base_hp=row["base_hp"],
             base_attack=row["base_attack"],

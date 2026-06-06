@@ -13,27 +13,31 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +7 pokeforge-front/package.json
-badd +5 pokeforge-front/src/index.css
-badd +17 pokeforge-front/src/App.tsx
-badd +6 pokeforge-front/src/main.tsx
-badd +35 pokeforge-front/src/context/AuthContext.tsx
-badd +23 pokeforge-front/src/pages/Login.tsx
-badd +14 pokeforge-front/src/hooks/useGraphQL.ts
-badd +4 pokeforge-front/tailwind.config.js
-badd +32 pokeforge-front/src/components/header.tsx
-badd +27 pokeforge-services/service-iv-calc/graphql_engine/types.py
-badd +8 pokeforge-front/src/pages/Rooster.tsx
-badd +79 pokeforge-front/src/pages/Pokedex.tsx
-badd +1 pokeforge-front/src/pages/IVCalculator.tsx
-badd +7 pokeforge-front/src/types/navigation.tsx
-badd +1 pokeforge-front/src/util/pokemon.tsx
-badd +8 pokeforge-front/src/components/PokemonImg.tsx
+badd +20 pokeforge-front/src/pages/Lineup.tsx
+badd +5 pokeforge-front/src/components/CurrentPokemon.tsx
+badd +26 pokeforge-front/src/components/CurrentPokemon.css
+badd +1 pokeforge-front/src/components/ActivePokemon.css
+badd +12 pokeforge-front/src/components/ActivePokemon.tsx
+badd +16 pokeforge-front/src/pages/Lineup.css
+badd +20 pokeforge-front/src/components/PokeBall.css
+badd +20 pokeforge-front/src/components/PokeBall.tsx
+badd +23 pokeforge-front/src/types/pokemon.tsx
+badd +78 pokeforge-db/migrations/001_init_all_systems.sql
+badd +98 pokeforge-front/src/components/PokemonForm.tsx
+badd +65 pokeforge-front/src/components/PokemonForm.css
+badd +72 pokeforge-front/src/pages/Pokedex.tsx
+badd +30 pokeforge-services/service-iv-calc/graphql_engine/mutations.py
+badd +7 pokeforge-services/service-iv-calc/main.py
+badd +1 pokeforge-services/service-iv-calc/graphql_engine/__init__.py
+badd +27 pokeforge-front/src/hooks/useGraphQL.ts
+badd +6 pokeforge-infra/docker-compose.yaml
+badd +4 pokeforge-infra/.env
+badd +7 pokeforge-services/service-iv-calc/config.py
+badd +18 pokeforge-services/service-iv-calc/graphql_engine/graphql_context.py
 argglobal
 %argdel
-edit pokeforge-front/src/index.css
+edit pokeforge-services/service-iv-calc/graphql_engine/graphql_context.py
 argglobal
-balt pokeforge-front/src/pages/Pokedex.tsx
 setlocal foldmethod=manual
 setlocal foldexpr=0
 setlocal foldmarker={{{,}}}
@@ -44,12 +48,12 @@ setlocal foldnestmax=20
 setlocal foldenable
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 5 - ((4 * winheight(0) + 13) / 27)
+let s:l = 19 - ((18 * winheight(0) + 14) / 28)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 5
-normal! 084|
+keepjumps 19
+normal! 09|
 lcd ~/node/pokeforge
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'

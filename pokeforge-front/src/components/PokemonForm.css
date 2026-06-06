@@ -100,6 +100,74 @@
     border-bottom: none;
 }
 
+.pokemon-form__body .pokemon-form__radio-container {
+    display: flex;
+    color: #555;
+    padding: 8px 0 2px;
+    height: 35px;
+    justify-content: center;
+    align-items: center;
+    padding-left: 8px;
+}
+
+.pokemon-form__body .pokemon-form__radio-container label {
+    padding-right: 20px;
+    position: relative;
+}
+
+.pokemon-form__body .pokemon-form__radio {
+    height: 0;
+    width: 0;
+}
+
+.pokemon-form__body .pokemon-form__radio:checked+span {
+    color: #140D00;
+}
+
+.pokemon-form__body .pokemon-form__radio:checked::after {
+    display: block;
+    position: absolute;
+    width: 6px;
+    height: 12px;
+    content: " ";
+    background: black;
+    top: calc(50% - 8px);
+    clip-path: polygon(0 0, 6px 6px, 0 12px);
+    left: -8px;
+}
+
+.pokemon-form__body .pokemon-form__radio-container:hover .pokemon-form__radio:checked:not(:hover)::after {
+    content: none;
+}
+
+.pokemon-form__body .pokemon-form__radio:focus::after,
+.pokemon-form__body .pokemon-form__radio:hover::after {
+    display: block;
+    position: absolute;
+    width: 6px;
+    height: 12px;
+    content: " ";
+    background: black;
+    top: calc(50% - 8px);
+    clip-path: polygon(0 0, 6px 6px, 0 12px);
+    left: -8px;
+    animation: bounce-horizontal 0.5s linear infinite;
+}
+
+@keyframes bounce-horizontal {
+    0% {
+        transform: translateX(0px);
+    }
+
+    50% {
+        transform: translateX(-3px);
+    }
+
+    100% {
+        transform: translateX(0px);
+    }
+}
+
 .pokemon-form__footer {
     display: flex;
     justify-content: end;
@@ -110,4 +178,18 @@
     width: calc(100% - 40px);
     margin: 16px 20px;
     box-shadow: inset -2px -2px 0px rgba(0, 0, 0, 0.5), inset 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-form__button {
+    display: flex;
+    border: 2px solid #E5E7EB;
+    background: #E0D858;
+    border-radius: 3px;
+    padding: 6px 12px;
+    text-shadow: 1px 1px 0px #B8A020, 1px -1px 0px #B8A020, -1px 1px 0px #B8A020, -1px -1px 0px #B8A020;
+    transition: background 0.1s ease;
+}
+
+.pokemon-form__button:hover {
+    background: #B8A020;
 }
