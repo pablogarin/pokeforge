@@ -1,6 +1,7 @@
 import { Loader2, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 // Custom components
+import './Pokedex.css';
 import Dialog from '../components/Dialog';
 import ElementTypes from '../components/ElementTypes';
 import PokemonImg from '../components/PokemonImg';

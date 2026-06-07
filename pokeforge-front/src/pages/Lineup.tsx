@@ -62,7 +62,6 @@ const Lineup = () => {
 
     useEffect(() => {
         const lineup = extractLineupFromData(data);
-        console.log(lineup);
         setPokemonList([...lineup]);
     }, [data]);
 

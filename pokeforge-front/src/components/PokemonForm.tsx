@@ -58,6 +58,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
     const [query, setQuery] = useState<string>('');
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     const [userPokemon, setUserPokemon] = useState<UserPokemon>(null);
+    const [animateNickname, setAnimateNickname] = useState<boolean>(false);
 
     useEffect(() => {
         if (query) {
@@ -84,6 +85,12 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
             if (Number(val) == userPokemon[key] || isNaN(val)) return;
             setUserPokemon(pkmn => ({ ...pkmn, [key]: Number(val) }));
         } else {
+            if (key == "customNickname") {
+                if (val.length > 10) {
+                    e.preventDefault();
+                    return;
+                }
+            }
             setUserPokemon(pkmn => ({ ...pkmn, [key]: val }));
         }
         // if (!val) return;
@@ -101,13 +108,22 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
         saveCallback({ ...payload, pokemonReference });
     }
 
+    const toggleNicknameAnimation = (isFocused: boolean) => {
+        setAnimateNickname(isFocused);
+    }
+
     const onCancelHandler = () => {
         saveCallback();
     }
 
+    const getCursorPosition = () => {
+        if (userPokemon === undefined) return '0px';
+        if (userPokemon.customNickname === undefined) return '0px';
+        return `${(userPokemon.customNickname.length < 9 ? userPokemon.customNickname.length : 9) * 14}px`;
+    }
+
     return (
-        <div className="pokemon-form">
-            {loading && (<Loader2 />)}
+        <div className="pokemon-form relative">
             <h2 className="pokemon-form__header"><span className="font-bold relative top-[-2px] left-[-3px]">&#x271A;</span><span>ADD POKeMON</span></h2>
             <div className="pokemon-form__body">
                 <div className="pokemon-form__pokemon-box">
@@ -119,9 +135,17 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                     </div>
                     <div className="flex flex-col justify-center items-start text-[#333]">
                         <div>{!!pokemon ? pokemon.name.toUpperCase() : 'POKeMON?'}</div>
-                        <div>{userPokemon?.customNickname ? userPokemon.customNickname : '_______'}</div>
+                        {userPokemon && (
+                            <div
+                                style={{ "--chars": getCursorPosition(), "--is-focused": animateNickname ? 'block' : 'none', } as React.CSSProperties}
+                                className="pokemon-form__nickname"
+                            >
+                                {userPokemon?.customNickname ? userPokemon.customNickname : '          '}
+                            </div>
+                        )}
                     </div>
                 </div>
+                <div className="pixel-rounded f-fill h-[20px]"></div>
                 {!pokemon && (
                     <div className="pokemon-form__input-container">
                         <label htmlFor="pokemon">POKEMON:</label>
@@ -133,13 +157,18 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                                 ))}
                             </div>
                         )}
+                        {loading && (
+                            <div className="absolute w-[20px] h-[20px] z-50 left-[calc(100%-30px)] top-[25px]">
+                                <Loader2 className="animate-spin text-amber-400" size={22} />
+                            </div>
+                        )}
                     </div>
                 )}
                 {!!pokemon && (
                     <>
                         <div className="pokemon-form__input-container">
                             <label htmlFor="customNickname">NICKNAME:</label>
-                            <input className="pokemon-form__input" onChange={onInputFieldChange} name="customNickname" type="text" placeholder="Nickname" />
+                            <input className="pokemon-form__input" maxLength={10} onChange={onInputFieldChange} onFocus={() => toggleNicknameAnimation(true)} onBlur={() => toggleNicknameAnimation(false)} name="customNickname" type="text" placeholder="Nickname" />
                         </div>
                         <div className="pokemon-form__input-container">
                             <label htmlFor="level">LEVEL:</label>
@@ -152,7 +181,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                         <div className="flex gap-[6px]">
                             <div className="pokemon-form__radio-container">
                                 <label>
-                                    <input className="pokemon-form__radio" value="Male" onChange={onInputFieldChange} name="gender" id="gender-male" type="radio" />
+                                    <input className="pokemon-form__radio" value="Male" onChange={onInputFieldChange} name="gender" id="gender-male" type="radio" defaultChecked={true} />
                                     <span>MALE</span>
                                 </label>
                                 <label>
@@ -198,7 +227,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                 <button className="pokemon-form__button" onClick={onCancelHandler}>CANCEL</button>
                 <button className="pokemon-form__button" onClick={onSaveHandler}>SAVE</button>
             </div>
-        </div>
+        </div >
     );
 }
 
