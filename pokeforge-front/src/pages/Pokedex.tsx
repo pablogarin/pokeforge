@@ -124,8 +124,8 @@ const Pokedex = () => {
                                 <tr key={pokemon.id} onClick={() => handlePokemonClick(pokemon)}>
                                     <td className="whitespace-nowrap px-4 py-2">No{String(pokemon.id).padStart(3, '0')}</td>
                                     <td className="whitespace-nowrap px-4 py-2">
-                                        <div className="flex items-center">
-                                            <PokemonImg pokemonId={pokemon.id} height="60" width="60" />
+                                        <div className="flex items-center justify-start">
+                                            <PokemonImg pokemonId={pokemon.id} height="60" width="60" isIcon={true} />
                                             <div className="pl-4">{pokemon.name.toUpperCase()}</div>
                                         </div>
                                     </td>
