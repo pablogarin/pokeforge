@@ -6,6 +6,7 @@ import PokemonForm from '../components/PokemonForm';
 import CurrentPokemon from '../components/CurrentPokemon';
 import { useGraphQL } from '../hooks/useGraphQL';
 import { type UserPokemon, type Pokemon } from '../types/pokemon';
+import crypto from 'crypto';
 import './Lineup.css';
 
 const queryGetMyCollection = `
@@ -60,9 +61,9 @@ const Lineup = () => {
         executeQuery(queryGetMyCollection);
     }, [executeQuery]);
 
-    const fillPokemonList = (newList: UserPokemon[]) => {
+    const fillPokemonList = (newList) => {
         const finalList = Array(6).fill(null);
-        for (const i in newList) {
+        for (i in newList) {
             finalList[i] = newList[i];
         }
         setPokemonList(finalList);
@@ -70,15 +71,16 @@ const Lineup = () => {
 
     useEffect(() => {
         const lineup = extractLineupFromData(data);
-        fillPokemonList(lineup);
+
+        setPokemonList(Array(6).from([...lineup]).fill(null));
     }, [data]);
 
     const onSave = (newPokemon?: UserPokemon) => {
-        if (newPokemon) fillPokemonList([...pokemonList.filter(pk => !!pk), newPokemon]);
+        if (newPokemon) setPokemonList((old) => ([...old, newPokemon]));
         setShowForm(false);
     }
 
-    if (!loading && (!pokemonList[0] || showForm)) {
+    if (!loading && (pokemonList.length == 0 || showForm)) {
         return (<PokemonForm saveCallback={onSave} />);
     }
 
@@ -90,14 +92,14 @@ const Lineup = () => {
         <div className="lineup w-1/2 h-full min-w-[600px] mx-auto rounded-md">
             <div className="flex flex-col relative h-full p-[12px] z-10">
                 <div className="flex flex-1">
-                    {pokemonList.length > 0 && !!pokemonList[0] && (
+                    {pokemonList.length > 0 && (
                         <>
                             <div className="flex flex-1">
                                 <CurrentPokemon pokemon={pokemonList[0]} />
                             </div>
                             <div className="pokemon-lineup flex flex-1 flex-col">
                                 {pokemonList.slice(1).map((pokemon: UserPokemon | null) => (
-                                    !!pokemon ? (<ActivePokemon pokemon={pokemon} />) : (<div className="pokemon-lineup__empty-slot"></div>)
+                                    !!pokemon ? (<ActivePokemon pokemon={pokemon} />) : (<div className=""></div>)
                                 ))}
                             </div>
                         </>

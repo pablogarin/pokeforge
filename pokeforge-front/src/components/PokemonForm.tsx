@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { type Pokemon, type UserPokemon, UserPokemonSchema } from '../types/pokemon';
 import PokemonImg from './PokemonImg';
 import { Loader2 } from 'lucide-react';
+import InputField from './Form/InputField';
+import RadioField from './Form/RadioField';
+import SelectField from './Form/SelectField';
 import './PokemonForm.css';
 import { useGraphQL } from '../hooks/useGraphQL';
 
@@ -49,6 +52,26 @@ const upsertQuery = `
     }
 `
 
+const queryAll = `
+query {
+    getGlobalPokedex {
+        id
+        name
+        height
+        weight
+        speciesId
+        genus
+        flavorText
+        types
+        baseHp
+        baseAttack
+        baseDefense
+        baseSpAttack
+        baseSpDefense
+        baseSpeed
+    }
+}`;
+
 type PokemonFormProps = {
     saveCallback: any;
 }
@@ -59,30 +82,37 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     const [userPokemon, setUserPokemon] = useState<UserPokemon>(null);
     const [animateNickname, setAnimateNickname] = useState<boolean>(false);
+    const [pokemonList, setPokemonList] = useState<{ text: string, value: Pokemon }[]>([]);
 
     useEffect(() => {
-        if (query) {
-            executeQuery(querySearch, { search: query });
-        }
-    }, [executeQuery, query]);
+        executeQuery(queryAll);
+    }, [executeQuery]);
 
-    const searchInputChange = (e) => {
-        const val = e.target.value;
-        if (val == query) return;
-        setQuery(val);
-    }
+    useEffect(() => {
+        const optionsList = data?.getGlobalPokedex?.map((pokemon: Pokemon) => {
+            return {
+                text: pokemon.name,
+                value: pokemon
+            }
+        });
+        setPokemonList(optionsList);
+    }, [data]);
 
     const pokemonSelection = (pokemon: Pokemon) => {
         setPokemon(pokemon);
         setUserPokemon(pkmn => ({ ...pkmn, pokemonId: pokemon.id, pokemonReference: pokemon }))
     }
 
-    const onInputFieldChange = (e) => {
-        const key = e?.target?.name;
-        const val = e?.target?.value || '';
-        const inputType = e?.target?.type;
+    const onInputFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const key = e.target.name;
+        const val = e.target.value.trim();
+        const inputType = e.target.type;
         if (inputType == "number") {
-            if (Number(val) == userPokemon[key] || isNaN(val)) return;
+            if (
+                !e.target.validity.valid ||
+
+                Number(val) == userPokemon[key]
+            ) return;
             setUserPokemon(pkmn => ({ ...pkmn, [key]: Number(val) }));
         } else {
             if (key == "customNickname") {
@@ -122,6 +152,19 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
         return `${(userPokemon.customNickname.length < 9 ? userPokemon.customNickname.length : 9) * 14}px`;
     }
 
+    // { value: string, label: string, isDefault?: boolean }
+    const genders = [
+        {
+            label: 'MALE',
+            value: 'Male',
+            isDefault: true,
+        },
+        {
+            label: 'FEMALE',
+            value: 'Female',
+        }
+    ];
+
     return (
         <div className="pokemon-form relative">
             <h2 className="pokemon-form__header"><span className="font-bold relative top-[-2px] left-[-3px]">&#x271A;</span><span>ADD POKeMON</span></h2>
@@ -147,78 +190,25 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                 </div>
                 <div className="pixel-rounded f-fill h-[20px]"></div>
                 {!pokemon && (
-                    <div className="pokemon-form__input-container">
-                        <label htmlFor="pokemon">POKEMON:</label>
-                        <input className="pokemon-form__input" name="pokemon" type="text" onChange={searchInputChange} placeholder="Search for your pokemon" />
-                        {!!query.length && !!data && (
-                            <div className="pokemon-form__input-dropdown">
-                                {data?.getPokemonByName?.map((pokemon: Pokemon) => (
-                                    <div className="pokemon-form__input-dropdown__item" onClick={() => pokemonSelection(pokemon)}>{pokemon.name}</div>
-                                ))}
-                            </div>
-                        )}
-                        {loading && (
-                            <div className="absolute w-[20px] h-[20px] z-50 left-[calc(100%-30px)] top-[25px]">
-                                <Loader2 className="animate-spin text-amber-400" size={22} />
-                            </div>
-                        )}
-                    </div>
+                    <SelectField<Pokemon> name="pokemon" label="POKEMON" data={pokemonList} onOptionSelect={pokemonSelection} />
                 )}
                 {!!pokemon && (
                     <>
-                        <div className="pokemon-form__input-container">
-                            <label htmlFor="customNickname">NICKNAME:</label>
-                            <input className="pokemon-form__input" maxLength={10} onChange={onInputFieldChange} onFocus={() => toggleNicknameAnimation(true)} onBlur={() => toggleNicknameAnimation(false)} name="customNickname" type="text" placeholder="Nickname" />
-                        </div>
-                        <div className="pokemon-form__input-container">
-                            <label htmlFor="level">LEVEL:</label>
-                            <input className="pokemon-form__input" onChange={onInputFieldChange} name="level" type="number" placeholder="Level" />
-                        </div>
-                        <div className="pokemon-form__input-container">
-                            <label htmlFor="nature">NATURE:</label>
-                            <input className="pokemon-form__input" onChange={onInputFieldChange} name="nature" type="text" placeholder="Nature" />
+                        <InputField onChange={onInputFieldChange} onFocus={() => toggleNicknameAnimation(true)} onBlur={() => toggleNicknameAnimation(false)} label="NICKNAME" maxLength={10} name="customNickname" type="text" placeholder="Nickname" />
+                        <InputField onChange={onInputFieldChange} label="LEVEL" type="number" name="level" placeholder="Level" />
+                        <InputField onChange={onInputFieldChange} label="NATURE" type="text" name="nature" placeholder="Nature" />
+                        <RadioField onChange={onInputFieldChange} name="gender" options={genders} />
+                        <div className="flex gap-[6px]">
+                            <InputField onChange={onInputFieldChange} label="HP" type="number" name="currentHp" placeholder="HP" />
+                            <InputField onChange={onInputFieldChange} label="ATTACK" type="number" name="currentAttack" placeholder="Attack" />
                         </div>
                         <div className="flex gap-[6px]">
-                            <div className="pokemon-form__radio-container">
-                                <label>
-                                    <input className="pokemon-form__radio" value="Male" onChange={onInputFieldChange} name="gender" id="gender-male" type="radio" defaultChecked={true} />
-                                    <span>MALE</span>
-                                </label>
-                                <label>
-                                    <input className="pokemon-form__radio" value="Female" onChange={onInputFieldChange} name="gender" id="gender-female" type="radio" />
-                                    <span>FEMALE</span>
-                                </label>
-                            </div>
+                            <InputField onChange={onInputFieldChange} label="DEFENSE" type="number" name="currentDefense" placeholder="Defense" />
+                            <InputField onChange={onInputFieldChange} label="SP ATK" type="number" name="currentSpAttack" placeholder="Sp. Attack" />
                         </div>
                         <div className="flex gap-[6px]">
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentHp">HP:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentHp" type="number" placeholder="HP" />
-                            </div>
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentAttack">ATTACK:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentAttack" type="number" placeholder="Attack" />
-                            </div>
-                        </div>
-                        <div className="flex gap-[6px]">
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentDefense">DEFENSE:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentDefense" type="number" placeholder="Defense" />
-                            </div>
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentSpAttack">SP ATK:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentSpAttack" type="number" placeholder="Sp Attack" />
-                            </div>
-                        </div>
-                        <div className="flex gap-[6px]">
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentSpDefense">SP DEF:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentSpDefense" type="number" placeholder="Sp Defense" />
-                            </div>
-                            <div className="pokemon-form__input-container">
-                                <label htmlFor="currentSpeed">SPEED:</label>
-                                <input className="pokemon-form__input" onChange={onInputFieldChange} name="currentSpeed" type="number" placeholder="Speed" />
-                            </div>
+                            <InputField onChange={onInputFieldChange} label="SP DEF" type="number" name="currentSpDefense" placeholder="Sp. Defense" />
+                            <InputField onChange={onInputFieldChange} label="SPEED" type="number" name="currentSpeed" placeholder="Speed" />
                         </div>
                     </>
                 )}
