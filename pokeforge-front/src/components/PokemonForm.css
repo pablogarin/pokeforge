@@ -171,13 +171,23 @@
     color: #fff;
 }
 
-.pokemon-form__body .pokemon-form__input-dropdown {
+.pokemon-form__body .pokemon-form__input-dropdown-container {
+    max-height: 272px;
+    overflow: hidden;
     position: absolute;
-    border: 3px solid #3333;
-    background: #F8F8F8;
+    top: 49px;
     width: 100%;
+    border-radius: 4px;
+}
+
+.pokemon-form__body .pokemon-form__input-dropdown {
+    max-height: inherit;
+    background: #F8F8F8;
+    border: 3px solid #3333;
+    height: 100%;
+    overflow-y: scroll;
     padding: 0 4px;
-    top: 50px;
+    scrollbar-width: none;
 }
 
 .pokemon-form__body .pokemon-form__input-dropdown__item {

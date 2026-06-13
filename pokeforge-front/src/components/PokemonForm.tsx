@@ -89,13 +89,15 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
     }, [executeQuery]);
 
     useEffect(() => {
-        const optionsList = data?.getGlobalPokedex?.map((pokemon: Pokemon) => {
-            return {
-                text: pokemon.name,
-                value: pokemon
-            }
-        });
-        setPokemonList(optionsList);
+        if (data?.getGlobalPokedex) {
+            const optionsList = data?.getGlobalPokedex?.map((pokemon: Pokemon) => {
+                return {
+                    text: `${pokemon.id.toString().padStart(3, '0')} - ${pokemon.name}`,
+                    value: pokemon
+                }
+            });
+            setPokemonList(optionsList);
+        }
     }, [data]);
 
     const pokemonSelection = (pokemon: Pokemon) => {
@@ -190,7 +192,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                 </div>
                 <div className="pixel-rounded f-fill h-[20px]"></div>
                 {!pokemon && (
-                    <SelectField<Pokemon> name="pokemon" label="POKEMON" data={pokemonList} onOptionSelect={pokemonSelection} />
+                    <SelectField<Pokemon> name="pokemon" label="POKEMON" placeholder="Search by name" data={pokemonList} onOptionSelect={pokemonSelection} />
                 )}
                 {!!pokemon && (
                     <>
