@@ -82,10 +82,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
 
     const onSaveHandler = async () => {
         if (!pokemon) {
-            setDialogData({
-                title: "Eeerrhm...",
-                body: "You must choose a pokemon first. You can scroll though the list or start writting it's name"
-            });
+            setDialogData({ title: "Eeerrhm...", body: "You must choose a pokemon first. You can scroll though the list or start writting it's name" });
             setShowDialog(true);
             return;
         }

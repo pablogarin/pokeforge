@@ -19,18 +19,36 @@ export const PokemonSchema = z.object({
 
 export const UserPokemonSchema = z.object({
     id: z.optional(z.number()),
-    pokemonId: z.number(),
+    pokemonId: z.number({
+        error: "You must select a pokemon first"
+    }),
     customNickname: z.optional(z.string()),
-    level: z.number(),
+    level: z.number({
+        error: "Level is needed"
+    }),
     gender: z.enum(['Male', 'Female']),
-    nature: z.string(),
+    nature: z.string({
+        error: "Nature is needed"
+    }),
     isInRooster: z.boolean(),
-    currentHp: z.number(),
-    currentAttack: z.number(),
-    currentDefense: z.number(),
-    currentSpAttack: z.number(),
-    currentSpDefense: z.number(),
-    currentSpeed: z.number(),
+    currentHp: z.number({
+        error: "HP is needed"
+    }),
+    currentAttack: z.number({
+        error: "Attack is needed"
+    }),
+    currentDefense: z.number({
+        error: "Defense is needed"
+    }),
+    currentSpAttack: z.number({
+        error: "Sp. Attack is needed"
+    }),
+    currentSpDefense: z.number({
+        error: "Sp. Defense is needed"
+    }),
+    currentSpeed: z.number({
+        error: "Speed is needed"
+    }),
     pokemonReference: z.optional(PokemonSchema)
 });
 
