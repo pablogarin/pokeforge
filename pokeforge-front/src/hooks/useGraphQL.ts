@@ -6,6 +6,65 @@ interface GraphQLState<T> {
     loading: boolean;
 }
 
+export const querySearch = `
+query SearchPokemon($search: String!) {
+    getPokemonByName(query: $search) {
+        id
+        name
+        height
+        weight
+        speciesId
+        genus
+        flavorText
+        types
+        baseHp
+        baseAttack
+        baseDefense
+        baseSpAttack
+        baseSpDefense
+        baseSpeed
+    }
+}`
+
+export const upsertQuery = `
+    mutation ($input: UpsertPokemonInput!) {
+        upsertPokemon(input: $input) {
+            id
+            customNickname
+            ivRangeAttack
+            ivRangeSpeed
+            knownMoves {
+                name
+                type
+            }
+            pokemonReference {
+                name
+                baseSpeed
+            }
+        }
+    }
+`
+
+export const queryAll = `
+query {
+    getGlobalPokedex {
+        id
+        name
+        height
+        weight
+        speciesId
+        genus
+        flavorText
+        types
+        baseHp
+        baseAttack
+        baseDefense
+        baseSpAttack
+        baseSpDefense
+        baseSpeed
+    }
+}`;
+
 export function useGraphQL<T = any>() {
     const [state, setState] = useState<GraphQLState<T>>({
         data: null,

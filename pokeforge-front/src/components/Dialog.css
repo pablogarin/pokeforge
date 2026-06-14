@@ -1,0 +1,86 @@
+@keyframes bounce-arrow {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.dialog__container {
+    position: absolute;
+    display: flex;
+    left: 50%;
+    transform: translateX(-300px);
+    width: 600px;
+    bottom: 40px;
+    min-height: 106px;
+}
+
+.dialog__box {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    cursor: pointer;
+}
+
+.dialog__box-title {
+    display: flex;
+}
+
+.dialog__box-body {
+    position: relative;
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.dialog__box-body .caret {
+    filter: drop-shadow(0px 2px 0px #888) drop-shadow(2px 0px 0px #888);
+}
+
+.dialog__box-body .caret::after {
+    position: absolute;
+    display: block;
+    content: '';
+    right: 0px;
+    bottom: 0px;
+    background: #D03E2A;
+    height: 12px;
+    width: 20px;
+    clip-path: polygon(0 0,
+            0 0,
+            18px 0,
+            18px 2px,
+            16px 2px,
+            16px 4px,
+            14px 4px,
+            14px 6px,
+            12px 6px,
+            12px 8px,
+            10px 8px,
+            10px 10px,
+            8px 10px,
+            8px 8px,
+            6px 8px,
+            6px 6px,
+            4px 6px,
+            4px 4px,
+            2px 4px,
+            2px 2px,
+            0 2px);
+    animation: bounce-arrow 0.5s linear infinite;
+}
+
+.dialog__message {
+    display: block;
+    transition: transform 0.5s ease;
+    height: inherit;
+    width: 100%;
+    padding-right: 16px;
+}
