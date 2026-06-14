@@ -79,7 +79,7 @@
 
 .dialog__message {
     display: block;
-    transition: transform 0.5s ease;
+    transition: transform 0.2s ease;
     height: inherit;
     width: 100%;
     padding-right: 16px;
