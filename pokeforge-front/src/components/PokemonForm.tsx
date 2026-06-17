@@ -1,32 +1,51 @@
 import { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { type Pokemon, type UserPokemon, UserPokemonSchema } from '../types/pokemon';
+import { type Move, type Pokemon, type UserPokemon, UserPokemonSchema } from '../types/pokemon';
 import PokemonImg from './PokemonImg';
 import { Loader2 } from 'lucide-react';
 import InputField from './Form/InputField';
 import RadioField from './Form/RadioField';
-import SelectField from './Form/SelectField';
+import SelectField, { type SelectFieldOption } from './Form/SelectField';
 import Dialog from './Dialog';
 import './PokemonForm.css';
-import { useGraphQL, queryAll, upsertQuery } from '../hooks/useGraphQL';
+import { useGraphQL, queryAll, queryMoves, upsertQuery } from '../hooks/useGraphQL';
 
 type Response = {
     getGlobalPokedex: Pokemon[] | undefined;
     getPokemonByName: Pokemon[] | undefined;
+    getGlobalMoves: { id: number, name: string, type: string, power: number, pp: number }[];
 }
 
 type PokemonFormProps = {
     saveCallback: any;
 }
 
+type InputErrorMessage = {
+    level: string;
+    nature: string;
+    currentHp: string;
+    currentAttack: string;
+    currentDefense: string;
+    currentSpAttack: string;
+    currentSpDefense: string;
+    currentSpeed: string;
+}
+
+const extractFromData = (data: Response) => {
+    if (data.getGlobalMoves !== undefined) return data.getGlobalMoves;
+}
+
 const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
     const { data, error, loading, executeQuery } = useGraphQL();
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     const [userPokemon, setUserPokemon] = useState<UserPokemon>(null);
+    const [moves, setMoves] = useState<SelectFieldOption<Move>[]>([]);
+    const [selectedMoves, setSelectedMoves] = useState<SelectFieldOption<Move>[]>([]);
     const [animateNickname, setAnimateNickname] = useState<boolean>(false);
-    const [pokemonList, setPokemonList] = useState<{ text: string, value: Pokemon }[]>([]);
+    const [pokemonList, setPokemonList] = useState<SelectFieldOption<Pokemon>[]>([]);
     const [showDialog, setShowDialog] = useState<boolean>(false);
     const [dialogData, setDialogData] = useState<{ title: string, body: string }>();
+    const [inputErrors, setInputErrors] = useState<InputErrorMessage>({} as InputErrorMessage);
 
     useEffect(() => {
         executeQuery(queryAll);
@@ -49,12 +68,17 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
             });
             setPokemonList(optionsList);
         }
+        if (data?.getGlobalMoves) {
+            const globalMoves = data?.getGlobalMoves?.map((move: Move) => ({ text: move.name, value: move }));
+            setMoves(globalMoves);
+        }
     }, [data]);
 
     const pokemonSelection = (pokemon: Pokemon) => {
         setPokemon(pokemon);
         // Start object with default values already set
         setUserPokemon(pkmn => ({ ...pkmn, pokemonId: pokemon.id, pokemonReference: pokemon, gender: 'Male' }))
+        executeQuery(queryMoves);
     }
 
     const onInputFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,13 +113,20 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
             setShowDialog(true);
             return;
         }
-        const result = UserPokemonSchema.safeParse({ ...userPokemon, userId: 1, isInRooster: false });
+        const moves = selectedMoves.map((opt: SelectFieldOption<Move>) => opt.value.id);
+        const result = UserPokemonSchema.safeParse({ ...userPokemon, userId: 1, isInRooster: false, knownMoveIds: moves });
         if (!result.success) {
-            setDialogData({ title: "Saving...", body: z.prettifyError(result.error) });
+            const errors = Object.entries(z.flattenError(result.error).fieldErrors).reduce((acc, [field, err]) => {
+                acc[field] = err.pop();
+                return acc;
+            }, {} as InputErrorMessage);
+            // const errors = result.error?.map(errori => 
+            setInputErrors({ ...errors });
+            setDialogData({ title: "Saving... NOT!", body: Object.entries(errors).map(([k, v]) => v).join(', ') });
             setShowDialog(true);
             return;
         }
-        const { pokemonReference, ...payload } = { ...result.data, knownMoveIds: [] };
+        const { pokemonReference, ...payload } = { ...result.data };
         await executeQuery(upsertQuery, { input: payload });
         saveCallback({ ...payload, pokemonReference });
     }
@@ -112,6 +143,21 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
         if (userPokemon === undefined) return '0px';
         if (userPokemon.customNickname === undefined) return '0px';
         return `${(userPokemon.customNickname.length < 9 ? userPokemon.customNickname.length : 9) * 14}px`;
+    }
+
+    const addMove = (move: Move) => {
+        if (selectedMoves.some(opt => opt.value.id === move.id)) {
+            // remove from list
+            setSelectedMoves([...selectedMoves.filter(e => e.value.id != move.id)]);
+        } else {
+            // max 4 moves.
+            if (selectedMoves.length == 4) return;
+            const opt = {
+                text: move.name,
+                value: move
+            }
+            setSelectedMoves(old => [...old, opt]);
+        }
     }
 
     // { value: string, label: string, isDefault?: boolean }
@@ -164,21 +210,22 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                     {!!pokemon && (
                         <>
                             <InputField onChange={onInputFieldChange} onFocus={() => toggleNicknameAnimation(true)} onBlur={() => toggleNicknameAnimation(false)} label="NICKNAME" maxLength={10} name="customNickname" type="text" placeholder="Nickname" />
-                            <InputField onChange={onInputFieldChange} label="LEVEL" type="number" name="level" placeholder="Level" />
-                            <InputField onChange={onInputFieldChange} label="NATURE" type="text" name="nature" placeholder="Nature" />
+                            <InputField onChange={onInputFieldChange} label="LEVEL" type="number" name="level" placeholder="Level" error={inputErrors.level} />
+                            <InputField onChange={onInputFieldChange} label="NATURE" type="text" name="nature" placeholder="Nature" error={inputErrors.nature} />
                             <RadioField onChange={onInputFieldChange} name="gender" options={genders} />
                             <div className="flex gap-[6px]">
-                                <InputField onChange={onInputFieldChange} label="HP" type="number" name="currentHp" placeholder="HP" />
-                                <InputField onChange={onInputFieldChange} label="ATTACK" type="number" name="currentAttack" placeholder="Attack" />
+                                <InputField onChange={onInputFieldChange} label="HP" type="number" name="currentHp" placeholder="HP" error={inputErrors.currentHp} />
+                                <InputField onChange={onInputFieldChange} label="ATTACK" type="number" name="currentAttack" placeholder="Attack" error={inputErrors.currentAttack} />
                             </div>
                             <div className="flex gap-[6px]">
-                                <InputField onChange={onInputFieldChange} label="DEFENSE" type="number" name="currentDefense" placeholder="Defense" />
-                                <InputField onChange={onInputFieldChange} label="SP ATK" type="number" name="currentSpAttack" placeholder="Sp. Attack" />
+                                <InputField onChange={onInputFieldChange} label="DEFENSE" type="number" name="currentDefense" placeholder="Defense" error={inputErrors.currentDefense} />
+                                <InputField onChange={onInputFieldChange} label="SP ATK" type="number" name="currentSpAttack" placeholder="Sp. Attack" error={inputErrors.currentSpAttack} />
                             </div>
                             <div className="flex gap-[6px]">
-                                <InputField onChange={onInputFieldChange} label="SP DEF" type="number" name="currentSpDefense" placeholder="Sp. Defense" />
-                                <InputField onChange={onInputFieldChange} label="SPEED" type="number" name="currentSpeed" placeholder="Speed" />
+                                <InputField onChange={onInputFieldChange} label="SP DEF" type="number" name="currentSpDefense" placeholder="Sp. Defense" error={inputErrors.currentSpDefense} />
+                                <InputField onChange={onInputFieldChange} label="SPEED" type="number" name="currentSpeed" placeholder="Speed" error={inputErrors.currentSpeed} />
                             </div>
+                            <SelectField<Move> name="move" multi={selectedMoves} label="MOVES" placeholder="Select Moves" data={moves} onOptionSelect={addMove} />
                         </>
                     )}
                 </div>

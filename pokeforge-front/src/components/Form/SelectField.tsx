@@ -9,22 +9,40 @@ type SelectFieldProps<T> = ComponentPropsWithoutRef<'input'> & {
     name: string;
     label: string;
     data: SelectFieldOption<T>[];
+    multi?: SelectFieldOption<T>[];
     onOptionSelect: (value: T) => void;
 }
 
 
-const SelectField = <T,>({ name, label, data, placeholder, onOptionSelect, ...inputProps }: SelectFieldProps<T>) => {
+const SelectField = <T,>({ name, label, data, multi, placeholder, onOptionSelect, ...inputProps }: SelectFieldProps<T>) => {
     const [filter, setFilter] = useState<string>('');
     const [filteredList, setFilteredList] = useState<SelectFieldOption<T>[]>();
     const [showOptions, setShowOptions] = useState<boolean>(false);
 
     useEffect(() => {
-        setFilteredList([...data]);
+        setListSorted();
+    }, [multi]);
+
+    useEffect(() => {
+        setListSorted();
     }, [data]);
 
     useEffect(() => {
-        setFilteredList(data.filter((opt: SelectFieldOption<T>) => (opt.text.toLowerCase().includes(filter))));
+        setListSorted();
     }, [filter]);
+
+    const setListSorted = () => {
+        const selected = multi ? multi : [];
+        const notSelected = data
+            .filter((option: SelectFieldOption<T>) => (!selected.some((opt: SelectFieldOption<T>) => opt.value == option.value)))
+            .sort((a, b) => a.text.localeCompare(b.text));
+        const aggregated = [...selected, ...notSelected];
+        if (!!filter) {
+            setFilteredList(aggregated.filter((opt: SelectFieldOption<T>) => (opt.text.toLowerCase().includes(filter))));
+        } else {
+            setFilteredList([...aggregated]);
+        }
+    }
 
     const searchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.trim();
@@ -33,7 +51,14 @@ const SelectField = <T,>({ name, label, data, placeholder, onOptionSelect, ...in
 
     const handleOptionSelection = (option: T) => {
         onOptionSelect(option);
+        setListSorted();
     }
+
+    const isSelected = (option: SelectFieldOption<T>) => {
+        if (!multi) return false;
+        return multi.some(opt => opt.value == option.value);
+    }
+
     return (
         <div
             className="pokemon-form__input-container"
@@ -49,6 +74,16 @@ const SelectField = <T,>({ name, label, data, placeholder, onOptionSelect, ...in
                 autoComplete="off"
                 onChange={searchInputChange}
                 placeholder={placeholder} />
+            {multi?.length > 0 && (
+                <div className="pokemon-form__input-dropdown__selected-item-container">
+                    {multi.map((opt: SelectFieldOption<T>) => (
+                        <div
+                            className="pokemon-form__input-dropdown__selected-item"
+                            onClick={(e) => handleOptionSelection(opt.value)}
+                        >{opt.text}</div>))
+                    }
+                </div>
+            )}
             {!!showOptions && !!filteredList && (
                 <div className="pokemon-form__input-dropdown-container">
                     <div className="pokemon-form__input-dropdown">
@@ -57,7 +92,7 @@ const SelectField = <T,>({ name, label, data, placeholder, onOptionSelect, ...in
                                 className="pokemon-form__input-dropdown__item"
                                 onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => handleOptionSelection(option.value)}
-                            >{option.text}</div>
+                            >{option.text}{isSelected(option) && "✓"}</div>
                         ))}
                     </div>
                 </div>

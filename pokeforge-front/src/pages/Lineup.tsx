@@ -4,7 +4,7 @@ import PokeBall from '../components/PokeBall';
 import Dialog from '../components/Dialog';
 import PokemonForm from '../components/PokemonForm';
 import CurrentPokemon from '../components/CurrentPokemon';
-import { useGraphQL } from '../hooks/useGraphQL';
+import { useGraphQL, queryMoves } from '../hooks/useGraphQL';
 import { type UserPokemon, type Pokemon } from '../types/pokemon';
 import './Lineup.css';
 

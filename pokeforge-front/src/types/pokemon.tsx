@@ -17,6 +17,14 @@ export const PokemonSchema = z.object({
     baseSpeed: z.number()
 });
 
+const MoveSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    type: z.string(),
+    power: z.number(),
+    pp: z.number()
+});
+
 export const UserPokemonSchema = z.object({
     id: z.optional(z.number()),
     pokemonId: z.number({
@@ -49,9 +57,12 @@ export const UserPokemonSchema = z.object({
     currentSpeed: z.number({
         error: "Speed is needed"
     }),
-    pokemonReference: z.optional(PokemonSchema)
+    pokemonReference: z.optional(PokemonSchema),
+    knownMoveIds: z.optional(z.array(z.number()))
 });
 
 export type Pokemon = z.infer<typeof PokemonSchema>;
 
 export type UserPokemon = z.infer<typeof UserPokemonSchema>;
+
+export type Move = z.infer<typeof MoveSchema>;

@@ -40,6 +40,15 @@ class User:
 
 
 @strawberry.type
+class Move:
+    id: int
+    name: str
+    type: str
+    power: int
+    pp: int
+
+
+@strawberry.type
 class UserPokemon:
     id: int
     user_id: int

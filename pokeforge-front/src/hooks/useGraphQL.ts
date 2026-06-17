@@ -65,6 +65,17 @@ query {
     }
 }`;
 
+export const queryMoves = `
+query {
+    getGlobalMoves {
+        id
+        name
+        type
+        power
+        pp
+    }
+}`;
+
 export function useGraphQL<T = any>() {
     const [state, setState] = useState<GraphQLState<T>>({
         data: null,

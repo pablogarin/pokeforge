@@ -4,17 +4,21 @@ import pandas as pd
 import requests
 from io import StringIO
 from database import PokemonRepository
-from database.models import PokemonDomainModel
+from database.models import PokemonDomainModel, MoveDomainModel
 
 # 2. Raw Sourcing GitHub Target Endpoints
-POKEMON_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon.csv"
-STATS_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_stats.csv"
-TYPES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_types.csv"
-TYPES_PROSE_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/type_names.csv"
-PAST_TYPES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_types_past.csv"
-FLAVOR_TEXT_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species_flavor_text.csv"
-POKEMON_SPECIES_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species.csv"
-POKEMON_NAME_CSV_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/data/v2/csv/pokemon_species_names.csv"
+BASE_URL = "https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master"
+FLAVOR_TEXT_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_species_flavor_text.csv"
+MOVE_NAMES_CSV_URL = f"{BASE_URL}/data/v2/csv/move_names.csv"
+MOVES_CSV_URL = f"{BASE_URL}/data/v2/csv/moves.csv"
+PAST_TYPES_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_types_past.csv"
+POKEMON_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon.csv"
+POKEMON_NAME_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_species_names.csv"
+POKEMON_SPECIES_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_species.csv"
+POKEMON_TYPES_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_types.csv"
+STATS_CSV_URL = f"{BASE_URL}/data/v2/csv/pokemon_stats.csv"
+TYPES_CSV_URL = f"{BASE_URL}/data/v2/csv/types.csv"
+TYPES_PROSE_URL = f"{BASE_URL}/data/v2/csv/type_names.csv"
 
 # 6,10,9 Charizard Flavor Text
 LANGUAGE_ID = 9
@@ -58,6 +62,9 @@ def run_ingestion_pipeline():
     df_flavor_text = fetch_csv_as_df(FLAVOR_TEXT_CSV_URL)
     df_pokemon_species = fetch_csv_as_df(POKEMON_SPECIES_CSV_URL)
     df_pokemon_names = fetch_csv_as_df(POKEMON_NAME_CSV_URL)
+    df_pokemon_types = fetch_csv_as_df(POKEMON_TYPES_CSV_URL)
+    df_moves = fetch_csv_as_df(MOVES_CSV_URL)
+    df_move_names = fetch_csv_as_df(MOVE_NAMES_CSV_URL)
 
     # Filter out everything past Generation 3 (National Dex limit for FireRed is Deoxys = 386)
     df_pkmn = df_pkmn[df_pkmn["id"] <= 386]
@@ -89,8 +96,8 @@ def run_ingestion_pipeline():
             if not past_type.empty:
                 pkmn_types_raw = past_type.sort_values(by="slot")
             else:
-                pkmn_types_raw = df_types[
-                    df_types["pokemon_id"] == pkmn_id
+                pkmn_types_raw = df_pokemon_types[
+                    df_pokemon_types["pokemon_id"] == pkmn_id
                 ].sort_values(by="slot")
             type_list = []
             for _, type_row in pkmn_types_raw.iterrows():
@@ -159,6 +166,36 @@ def run_ingestion_pipeline():
         print(
             f"Success! Ingested and synchronized exactly {len(df_pkmn)} Generation 3 reference entries."
         )
+
+        print("Adding moves to the database...")
+        df_moves = df_moves[
+            (df_moves["generation_id"]) <= 3 & (df_moves["identifier"] != "shadow")
+        ]
+        for _, move in df_moves.iterrows():
+            move_id = int(move["id"])
+            move_name = df_move_names[
+                (df_move_names["move_id"] == move_id)
+                & (df_move_names["local_language_id"] == LANGUAGE_ID)
+            ]
+            str_name = move_name["name"].values[0]
+            power = move["power"]
+            pp = move["pp"]
+            type_id = move["type_id"]
+            if df_types[df_types["id"] == type_id]["generation_id"].values[0] > 3:
+                type_id = 1
+            type_obj = df_type_names[
+                (df_type_names["type_id"] == type_id)
+                & (df_type_names["local_language_id"] == LANGUAGE_ID)
+            ]
+            type_str = type_obj["name"].values[0]
+            row = MoveDomainModel(
+                id=move_id,
+                name=str_name,
+                type=type_str,
+                power=0 if math.isnan(power) else power,
+                pp=0 if math.isnan(pp) else pp,
+            )
+            PokemonRepository.upsert_move(row)
 
     except Exception as e:
         print(f"Ingestion crashed: {e}")

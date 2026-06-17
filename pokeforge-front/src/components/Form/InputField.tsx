@@ -3,11 +3,12 @@ import React, { type ComponentPropsWithoutRef } from 'react';
 type InputFieldProps = ComponentPropsWithoutRef<'input'> & {
     label: string;
     name: string; // redefined here to enforce it
+    error?: string;
     callback?: (name: string, value: string) => void;
     customValidation?: (inputType: string, value: string) => boolean;
 }
 
-const InputField = ({ label, name, type = 'text', callback, customValidation, ...inputProps }: InputFieldProps) => {
+const InputField = ({ label, name, error = '', type = 'text', callback, customValidation, ...inputProps }: InputFieldProps) => {
     const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         if (customValidation) {
@@ -18,7 +19,7 @@ const InputField = ({ label, name, type = 'text', callback, customValidation, ..
     }
     return (
         <>
-            <div className="pokemon-form__input-container">
+            <div className={`pokemon-form__input-container ${error !== '' ? 'has-error' : ''}`}>
                 <label htmlFor={name}>{label}</label>
                 <input
                     {...inputProps}

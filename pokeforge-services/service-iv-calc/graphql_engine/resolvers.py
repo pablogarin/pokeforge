@@ -1,6 +1,6 @@
 from strawberry.types import Info
 from typing import List
-from .types import GlobalPokemon, UserPokemon, User
+from .types import GlobalPokemon, Move, UserPokemon, User
 from database import PokemonRepository
 
 
@@ -108,6 +108,20 @@ def resolve_search_pokemon(query: str) -> List[GlobalPokemon]:
             base_sp_attack=row["base_sp_attack"],
             base_sp_defense=row["base_sp_defense"],
             base_speed=row["base_speed"],
+        )
+        for row in rows
+    ]
+
+
+def resolve_global_moves():
+    rows = PokemonRepository.fetch_all_moves()
+    return [
+        Move(
+            id=row["id"],
+            name=row["name"],
+            type=row["type"],
+            power=row["power"],
+            pp=row["pp"],
         )
         for row in rows
     ]
