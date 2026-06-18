@@ -6,74 +6,38 @@ import Dialog from '../components/Dialog';
 import ElementTypes from '../components/ElementTypes';
 import PokemonImg from '../components/PokemonImg';
 import PokemonCard from '../components/PokemonCard';
-import { useGraphQL } from '../hooks/useGraphQL';
+import { useGraphQL, queryAll } from '../hooks/useGraphQL';
 import { type Pokemon } from '../types/pokemon';
-
-type Response = {
-    getGlobalPokedex: Pokemon[] | undefined;
-    getPokemonByName: Pokemon[] | undefined;
-}
-
-const queryAll = `
-query {
-    getGlobalPokedex {
-        id
-        name
-        height
-        weight
-        speciesId
-        genus
-        flavorText
-        types
-        baseHp
-        baseAttack
-        baseDefense
-        baseSpAttack
-        baseSpDefense
-        baseSpeed
-    }
-}`;
-
-const querySearch = `
-query SearchPokemon($search: String!) {
-    getPokemonByName(query: $search) {
-        id
-        name
-        height
-        weight
-        speciesId
-        genus
-        flavorText
-        types
-        baseHp
-        baseAttack
-        baseDefense
-        baseSpAttack
-        baseSpDefense
-        baseSpeed
-    }
-}`
-
-const extractResultFromQuery = (data: Response | null): Pokemon[] => {
-    if (!data) return [];
-    if (data.getGlobalPokedex !== undefined) return data.getGlobalPokedex;
-    if (data.getPokemonByName !== undefined) return data.getPokemonByName;
-};
 
 const Pokedex = () => {
     const { data, error, loading, executeQuery } = useGraphQL();
     const [search, setSearch] = useState<string | null>(null);
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     const [showPokemonCard, setShowPokemonCard] = useState<boolean>(true);
-    const pokemonList = extractResultFromQuery(data);
+    const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
+    const [filteredList, setFilteredList] = useState<Pokemon[]>([]);
+
+    useEffect(() => {
+        executeQuery(queryAll);
+    }, [executeQuery]);
+
+    useEffect(() => {
+        if (!data) return;
+        const { type, data: response } = data;
+        if (type == 'Pokemon[]') {
+            setPokemonList(response);
+            setFilteredList(response);
+        }
+    }, [data]);
 
     useEffect(() => {
         if (!search) {
-            executeQuery(queryAll);
+            setFilteredList([...pokemonList]);
             return;
         }
-        executeQuery(querySearch, { search });
-    }, [search, executeQuery]);
+        const filtered = pokemonList.filter((pkmn: Pokemon) => pkmn.name.toLowerCase().includes(search.toLowerCase()));
+        setFilteredList(filtered);
+    }, [search]);
 
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const currentSearch = e.currentTarget.value;
@@ -89,7 +53,7 @@ const Pokedex = () => {
     return (
         <div className="flex flex-1 flex-col">
             {error && (
-                <Dialog title="Error" body="Something happened!" hasMore={false} />
+                <Dialog title="Error" body="Something happened!" dismiss={() => { }} />
             )}
             {!!pokemon && showPokemonCard && (
                 <div onClick={() => setShowPokemonCard(false)} >
@@ -121,7 +85,7 @@ const Pokedex = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {pokemonList.map((pokemon: Pokemon) => (
+                            {filteredList.map((pokemon: Pokemon) => (
                                 <tr key={pokemon.id} onClick={() => handlePokemonClick(pokemon)}>
                                     <td className="whitespace-nowrap px-4 py-2">No{String(pokemon.id).padStart(3, '0')}</td>
                                     <td className="whitespace-nowrap px-4 py-2">

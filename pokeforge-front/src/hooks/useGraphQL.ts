@@ -1,7 +1,14 @@
 import { useState, useCallback } from 'react';
+import { type Move, type Pokemon, type UserPokemon } from '../types/pokemon';
+
+
+export type Response<T> = {
+    type: string;
+    data: T;
+}
 
 interface GraphQLState<T> {
-    data: T | null;
+    data: Response<T> | null;
     error: string | null;
     loading: boolean;
 }
@@ -76,12 +83,67 @@ query {
     }
 }`;
 
+export const queryGetMyCollection = `
+query {
+  getMyCollection {
+    customNickname
+    level
+    gender
+    nature
+    isInRooster
+    currentHp
+    currentAttack
+    currentDefense
+    currentSpDefense
+    currentSpeed
+    ivRangeHp
+    ivRangeAttack
+    ivRangeDefense
+    ivRangeSpAttack
+    ivRangeSpDefense
+    ivRangeSpeed
+    knownMoves {
+      name
+      type
+      power
+      pp
+    }
+    pokemonReference {
+      id
+      name
+      speciesId
+    }
+  }
+}`;
+
+const typeMap = {
+    'getGlobalPokedex': 'Pokemon[]',
+    'getGlobalMoves': 'Move[]',
+    'getPokemonByName': 'Pokemon[]',
+    'getMyCollection': 'UserPokemon[]'
+}
+
+type GraphQLResponse = {
+    getGlobalPokedex?: Pokemon[];
+    getGlobalMoves?: Move[];
+    getPokemonByName?: Pokemon[];
+    getMyCollection?: UserPokemon[];
+}
+
 export function useGraphQL<T = any>() {
     const [state, setState] = useState<GraphQLState<T>>({
         data: null,
         error: null,
         loading: false
     });
+
+    const extractDataAndType = (data: GraphQLResponse) => {
+        for (const queryName in typeMap) {
+            if (data[queryName]) {
+                return { data: data[queryName] as T, type: typeMap[queryName] };
+            }
+        }
+    }
 
     const executeQuery = useCallback(async (query: string, variables: Record<string, any> = {}) => {
         setState({ data: null, error: null, loading: true });
@@ -99,9 +161,11 @@ export function useGraphQL<T = any>() {
                 })
             });
             const json = await response.json();
-            setState({ data: json.data, error: json.errorMsg, loading: false });
+            const parsedData = extractDataAndType(json.data);
+            setState({ data: parsedData, error: json.errorMsg, loading: false });
         } catch (err) {
             console.error(err);
+            setState({ data: null, error: err, loading: false });
         }
     }, []);
     return { ...state, executeQuery };

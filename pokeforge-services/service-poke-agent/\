@@ -5,14 +5,13 @@ import Dialog from '../components/Dialog';
 import PokemonForm from '../components/PokemonForm';
 import CurrentPokemon from '../components/CurrentPokemon';
 import { useGraphQL, queryGetMyCollection } from '../hooks/useGraphQL';
-import { type UserPokemon } from '../types/pokemon';
+import { type UserPokemon, type Pokemon } from '../types/pokemon';
 import './Lineup.css';
 
 const Lineup = () => {
     const { data, error, loading, executeQuery } = useGraphQL<UserPokemon[]>();
     const [showForm, setShowForm] = useState<boolean>(false);
     const [pokemonList, setPokemonList] = useState<(UserPokemon | null)[]>([]);
-    const [showDialog, setShowDialog] = useState<boolean>(false);
 
     useEffect(() => {
         executeQuery(queryGetMyCollection);
@@ -29,12 +28,6 @@ const Lineup = () => {
     useEffect(() => {
         fillPokemonList(data?.data);
     }, [data]);
-
-    useEffect(() => {
-        if (error) {
-            setShowDialog(true);
-        }
-    }, [error]);
 
     const onSave = (newPokemon?: UserPokemon) => {
         if (newPokemon) fillPokemonList([...pokemonList.filter(pk => !!pk), newPokemon]);
@@ -71,7 +64,7 @@ const Lineup = () => {
                     <div className="flex w-[140px] ml-2">
                         <PokeBall text="ADD" onClick={handleAddBtnClick} />
                     </div>
-                    {showDialog && (<Dialog title="Error" body={error} dismiss={() => setShowDialog(false)} />)}
+                    {error && (<Dialog title="Error" body={error} hasMore={false} />)}
                 </div>
             </div>
         </div>

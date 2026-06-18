@@ -178,10 +178,14 @@
     max-height: 272px;
     overflow: hidden;
     position: absolute;
-    top: 49px;
+    top: 56px;
     width: 100%;
     border-radius: 4px;
     z-index: 100;
+}
+
+.pokemon-form__body .pokemon-form__input-dropdown-container.upwards {
+    top: -240px;
 }
 
 .pokemon-form__body .pokemon-form__input-dropdown {

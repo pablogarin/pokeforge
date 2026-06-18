@@ -10,12 +10,6 @@ import Dialog from './Dialog';
 import './PokemonForm.css';
 import { useGraphQL, queryAll, queryMoves, upsertQuery } from '../hooks/useGraphQL';
 
-type Response = {
-    getGlobalPokedex: Pokemon[] | undefined;
-    getPokemonByName: Pokemon[] | undefined;
-    getGlobalMoves: { id: number, name: string, type: string, power: number, pp: number }[];
-}
-
 type PokemonFormProps = {
     saveCallback: any;
 }
@@ -31,12 +25,8 @@ type InputErrorMessage = {
     currentSpeed: string;
 }
 
-const extractFromData = (data: Response) => {
-    if (data.getGlobalMoves !== undefined) return data.getGlobalMoves;
-}
-
 const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
-    const { data, error, loading, executeQuery } = useGraphQL();
+    const { data, error, loading, executeQuery } = useGraphQL<Pokemon[] | Move[]>();
     const [pokemon, setPokemon] = useState<Pokemon | null>(null);
     const [userPokemon, setUserPokemon] = useState<UserPokemon>(null);
     const [moves, setMoves] = useState<SelectFieldOption<Move>[]>([]);
@@ -59,8 +49,10 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
     }, [error]);
 
     useEffect(() => {
-        if (data?.getGlobalPokedex) {
-            const optionsList = data?.getGlobalPokedex?.map((pokemon: Pokemon) => {
+        if (!data) return;
+        const { type, data: response } = data;
+        if (type == 'Pokemon[]') {
+            const optionsList = (response as Pokemon[]).map((pokemon: Pokemon) => {
                 return {
                     text: `${pokemon.id.toString().padStart(3, '0')} - ${pokemon.name}`,
                     value: pokemon
@@ -68,8 +60,8 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
             });
             setPokemonList(optionsList);
         }
-        if (data?.getGlobalMoves) {
-            const globalMoves = data?.getGlobalMoves?.map((move: Move) => ({ text: move.name, value: move }));
+        if (type == 'Move[]') {
+            const globalMoves = (response as Move[]).map((move: Move) => ({ text: move.name, value: move }));
             setMoves(globalMoves);
         }
     }, [data]);
@@ -225,7 +217,7 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                                 <InputField onChange={onInputFieldChange} label="SP DEF" type="number" name="currentSpDefense" placeholder="Sp. Defense" error={inputErrors.currentSpDefense} />
                                 <InputField onChange={onInputFieldChange} label="SPEED" type="number" name="currentSpeed" placeholder="Speed" error={inputErrors.currentSpeed} />
                             </div>
-                            <SelectField<Move> name="move" multi={selectedMoves} label="MOVES" placeholder="Select Moves" data={moves} onOptionSelect={addMove} />
+                            <SelectField<Move> className="upwards" name="move" multi={selectedMoves} label="MOVES" placeholder="Select Moves" data={moves} onOptionSelect={addMove} />
                         </>
                     )}
                 </div>
