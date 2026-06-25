@@ -69,7 +69,7 @@
             2px 2px);
     width: 10px;
     height: 14px;
-    right: 2px;
+    right: 3px;
     background-color: var(--dark-blue);
 }
 
@@ -83,7 +83,7 @@
 
 .tab-panel__tabs__item.active {
     background-color: var(--color-yellow-accent);
-    filter: drop-shadow(2px 0px 0px var(--dark-blue));
+    filter: drop-shadow(3px 0px 0px var(--dark-blue));
     z-index: 1000;
 }
 
@@ -97,7 +97,7 @@
     position: absolute;
     height: 30px;
     width: 8px;
-    right: -8px;
+    right: -7px;
     clip-path: polygon(0 0,
             2px 0px,
             2px 2px,

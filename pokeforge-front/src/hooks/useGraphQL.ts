@@ -95,6 +95,7 @@ query {
     currentHp
     currentAttack
     currentDefense
+    currentSpAttack
     currentSpDefense
     currentSpeed
     ivRangeHp
@@ -130,6 +131,7 @@ query GetUserPokemon($pokemonId: Int!) {
         currentHp
         currentAttack
         currentDefense
+        currentSpAttack
         currentSpDefense
         currentSpeed
         ivRangeHp
