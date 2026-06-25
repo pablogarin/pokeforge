@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import './styles/variables.css';
+@import './styles/global.css';
 
 @tailwind base;
 @tailwind components;

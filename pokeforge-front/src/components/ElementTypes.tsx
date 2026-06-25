@@ -1,9 +1,11 @@
+import './ElementTypes.css';
+
 type ElementTypesProps = {
-    types: { types: string[] };
+    types: string[];
 }
 
 
-const ElementTypes = (types: ElementTypesProps) => {
+const ElementTypes = ({ types }: ElementTypesProps) => {
     const colorMap = {
         "normal": "#a8a77a",
         "fire": "#ee8130",
@@ -28,9 +30,9 @@ const ElementTypes = (types: ElementTypesProps) => {
         return colorMap[type.toLowerCase()];
     }
     return (
-        <div className="flex">
-            {types.types && types.types.map((type) => (
-                <div style={{ backgroundColor: getColor(type) }} className="rounded-[2px] font-bold px-1 py-1 mr-2 [text-shadow:2px_2px_0px_rgba(0,0,0,1)] w-[80px] flex justify-center items-center"> {type.toUpperCase().slice(0, 6)}</div>
+        <div className="element-types">
+            {types && types.map((type) => (
+                <div style={{ backgroundColor: getColor(type) }} className="element-types__type"> {type.toUpperCase().slice(0, 6)}</div>
             ))
             }
         </div >

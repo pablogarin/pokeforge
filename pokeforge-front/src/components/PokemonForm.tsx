@@ -205,15 +205,15 @@ const PokemonForm = ({ saveCallback }: PokemonFormProps) => {
                             <InputField onChange={onInputFieldChange} label="LEVEL" type="number" name="level" placeholder="Level" error={inputErrors.level} />
                             <InputField onChange={onInputFieldChange} label="NATURE" type="text" name="nature" placeholder="Nature" error={inputErrors.nature} />
                             <RadioField onChange={onInputFieldChange} name="gender" options={genders} />
-                            <div className="flex gap-[6px]">
+                            <div className="flex gap-[6px] w-full">
                                 <InputField onChange={onInputFieldChange} label="HP" type="number" name="currentHp" placeholder="HP" error={inputErrors.currentHp} />
                                 <InputField onChange={onInputFieldChange} label="ATTACK" type="number" name="currentAttack" placeholder="Attack" error={inputErrors.currentAttack} />
                             </div>
-                            <div className="flex gap-[6px]">
+                            <div className="flex gap-[6px] w-full">
                                 <InputField onChange={onInputFieldChange} label="DEFENSE" type="number" name="currentDefense" placeholder="Defense" error={inputErrors.currentDefense} />
                                 <InputField onChange={onInputFieldChange} label="SP ATK" type="number" name="currentSpAttack" placeholder="Sp. Attack" error={inputErrors.currentSpAttack} />
                             </div>
-                            <div className="flex gap-[6px]">
+                            <div className="flex gap-[6px] w-full">
                                 <InputField onChange={onInputFieldChange} label="SP DEF" type="number" name="currentSpDefense" placeholder="Sp. Defense" error={inputErrors.currentSpDefense} />
                                 <InputField onChange={onInputFieldChange} label="SPEED" type="number" name="currentSpeed" placeholder="Speed" error={inputErrors.currentSpeed} />
                             </div>

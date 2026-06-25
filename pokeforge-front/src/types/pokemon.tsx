@@ -58,7 +58,8 @@ export const UserPokemonSchema = z.object({
         error: "Speed is needed"
     }),
     pokemonReference: z.optional(PokemonSchema),
-    knownMoveIds: z.optional(z.array(z.number()))
+    knownMoveIds: z.optional(z.array(z.number())),
+    knownMoves: z.optional(z.array(MoveSchema))
 });
 
 export type Pokemon = z.infer<typeof PokemonSchema>;

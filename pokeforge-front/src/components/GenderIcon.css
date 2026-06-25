@@ -1,0 +1,87 @@
+:root {
+    --male-shadow: #3050C8;
+    --female-shadow: #9C4239;
+}
+
+.pokemon-gender {
+    filter: drop-shadow(2px 0px 0px #3050C8);
+}
+
+.pokemon-gender__female {
+    background-color: #F89890;
+    clip-path: polygon(evenodd,
+            4px 20px,
+            6px 20px,
+            6px 16px,
+            10px 16px,
+            10px 14px,
+            6px 14px,
+            6px 10px,
+            8px 10px,
+            8px 8px,
+            10px 8px,
+            10px 2px,
+            8px 2px,
+            8px 0px,
+            2px 0px,
+            2px 2px,
+            0px 2px,
+            0px 8px,
+            2px 8px,
+            2px 8px,
+            8px 8px,
+            8px 2px,
+            2px 2px,
+            2px 10px,
+            4px 10px,
+            4px 14px,
+            0px 14px,
+            0px 16px,
+            4px 16px);
+}
+
+.pokemon-gender__symbol {
+    display: block;
+    width: 10px;
+    height: 20px;
+}
+
+.pokemon-gender__male {
+    background-color: #A0C0F0;
+    clip-path: polygon(evenodd, 4px 0,
+            6px 0,
+            6px 2px,
+            8px 2px,
+            8px 4px,
+            10px 4px,
+            10px 6px,
+            8px 6px,
+            8px 4px,
+            6px 4px,
+            6px 10px,
+            8px 10px,
+            8px 12px,
+            10px 12px,
+            10px 18px,
+            8px 18px,
+            8px 20px,
+            2px 20px,
+            2px 18px,
+            0 18px,
+            0 12px,
+            2px 12px,
+            2px 12px,
+            8px 12px,
+            8px 18px,
+            2px 18px,
+            2px 10px,
+            4px 10px,
+            4px 4px,
+            2px 4px,
+            2px 6px,
+            0 6px,
+            0 4px,
+            2px 4px,
+            2px 2px,
+            4px 2px);
+}

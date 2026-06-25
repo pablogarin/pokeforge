@@ -18,7 +18,7 @@ const convertWeight = (weight: number) => {
 
 const PokemonCard = ({ pokemon }: PokemonCardProps) => {
     return (
-        <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center bg-[#A8B820]/50" onClick={() => setShow(false)}>
+        <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center bg-[#A8B820]/50 z-50" onClick={() => setShow(false)}>
             <div className="flex flex-col w-[500px] h-[300px] rounded-xl border-[#C1B085] border-4 text-black">
                 <div className="flex flex-1 bg-[#F8F8F8] justify-between w-full min-h-0">
                     <div className="flex flex-1 flex-col justify-start px-8 py-12">

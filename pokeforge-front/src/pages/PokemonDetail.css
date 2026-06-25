@@ -1,0 +1,271 @@
+:root {
+    --dark-blue: #004890;
+    --dark-gray: #606878;
+    --dark-purple: #B088D0;
+    --off-white: #F8F8F8;
+    --light-gray: #E8E8E8;
+    --purple: #C8A8E8;
+}
+
+.pokemon-detail {
+    display: flex;
+    max-width: 800px;
+    font-size: 12pt;
+    margin: 0 auto;
+}
+
+
+.tab-panel {
+    height: 30px;
+}
+
+.tab-panel__title {
+    display: flex;
+    background-color: var(--color-yellow-accent);
+    height: 100%;
+    align-items: center;
+    flex-grow: 1;
+    padding-left: 8px;
+    text-shadow: 2px 1px #333;
+}
+
+.tab-panel__tabs {
+    display: flex;
+    background-color: var(--blue-menu);
+    height: 100%;
+    flex-grow: 1;
+}
+
+.tab-panel__tabs::before {
+    background-color: var(--color-yellow-accent);
+}
+
+.tab-panel__tabs__item {
+    display: flex;
+    height: 30px;
+    width: 30px;
+    justify-content: center;
+    align-items: center;
+    background: #68C0C8;
+    position: relative;
+    cursor: pointer;
+}
+
+.tab-panel__tabs__item::before {
+    display: block;
+    position: absolute;
+    content: '';
+    clip-path: polygon(2px 0,
+            8px 0,
+            8px 2px,
+            10px 2px,
+            10px 12px,
+            8px 12px,
+            8px 14px,
+            2px 14px,
+            2px 12px,
+            0 12px,
+            0 2px,
+            2px 2px);
+    width: 10px;
+    height: 14px;
+    right: 2px;
+    background-color: var(--dark-blue);
+}
+
+.tab-panel__tabs__item:has(~ .tab-panel__tabs__item.active) {
+    background-color: var(--color-yellow-accent);
+}
+
+.tab-panel__tabs__item:has(~ .tab-panel__tabs__item.active)::before {
+    background-color: #C0B870;
+}
+
+.tab-panel__tabs__item.active {
+    background-color: var(--color-yellow-accent);
+    filter: drop-shadow(2px 0px 0px var(--dark-blue));
+    z-index: 1000;
+}
+
+.tab-panel__tabs__item.active::before {
+    background-color: #fff;
+}
+
+.tab-panel__tabs__item::after {
+    display: block;
+    content: '';
+    position: absolute;
+    height: 30px;
+    width: 8px;
+    right: -8px;
+    clip-path: polygon(0 0,
+            2px 0px,
+            2px 2px,
+            4px 2px,
+            4px 4px,
+            6px 4px,
+            6px 8px,
+            8px 8px,
+            8px 10px,
+            8px 22px,
+            6px 22px,
+            6px 26px,
+            4px 26px,
+            4px 28px,
+            2px 28px,
+            2px 30px,
+            0 30px);
+    background-color: inherit;
+}
+
+.tab-panel__tabs__item.active::after {
+    background-color: var(--color-yellow-accent);
+    z-index: 100;
+}
+
+.tab-panel__actions {
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    flex-grow: 1;
+    padding-right: 8px;
+}
+
+.pokemon-detail__details {
+    height: 100%;
+    position: relative;
+    width: 100%;
+    background-color: #F8E8D0;
+    border: 4px solid var(--dark-gray);
+    box-shadow: inset 0 -4px 0 #E088688F;
+}
+
+.pokemon-detail__card {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    background: repeating-linear-gradient(to bottom, var(--off-white) 0, var(--off-white) 2px, var(--light-gray) 2px, var(--light-gray) 8px);
+    justify-content: center;
+    align-items: center;
+    border: 4px solid var(--dark-gray);
+    height: 200px;
+    position: absolute;
+    top: -4px;
+    left: -4px;
+}
+
+.pokemon-detail__card__title {
+    background-color: var(--purple);
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 20px 0px 5px;
+    text-shadow: 2px 1px #333;
+}
+
+.pokemon-detail__card__picture {
+    display: flex;
+    flex-grow: 1;
+    border: 4px solid var(--purple);
+    box-shadow: inset 2px 2px 0px var(--dark-purple), inset -2px -2px 0px var(--dark-purple);
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.pokemon-detail__body {
+    height: 100%;
+    background: repeating-linear-gradient(to bottom, #F8D0A8 0, #F8D0A8 2px, #F8A890 2px, #F8A890 4px);
+    clip-path: polygon(50% 4px,
+            100% 4px,
+            100% 100%,
+            4px 100%,
+            4px 200px,
+            50% 200px);
+    box-shadow: inset 0 -4px 0 #E088686F;
+    width: 100%;
+}
+
+.pokemon-detail__body-spacer {
+    float: left;
+    width: 50%;
+    height: 200px;
+    shape-outside: polygon(0 0, 0 100%, 100% 100%, 100% 0);
+    margin-right: 20px;
+}
+
+.pokemon-detail__info {
+    display: inline-block;
+    width: calc(50% - 25px);
+}
+
+.pokemon-detail__info-line {
+    align-items: center;
+    color: #333;
+    display: flex;
+    width: 100%;
+    margin: 10px 0;
+    height: 24px;
+    position: relative;
+    font-size: 16px;
+}
+
+.pokemon-detail__info-line__label {
+    display: flex;
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    color: var(--off-white);
+    text-shadow: 1px 1px #788090, 1px -1px #788090, -1px 1px #788090, -1px -1px #788090, 2px 0 #788090, 0 2px #788090, -2px 0 #788090, 0 -2px #788090;
+    z-index: 100;
+    font-size: 10pt;
+}
+
+.pokemon-detail__info-line__label::before {
+    display: block;
+    content: '';
+    width: calc(100% + 10px);
+    background: #788090;
+    height: 10px;
+    position: absolute;
+    z-index: -1;
+    clip-path: polygon(2px 0,
+            calc(100% - 2px) 0,
+            calc(100% - 2px) 2px,
+            100% 2px,
+            100% calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 2px),
+            calc(100% - 2px) 100%,
+            2px 100%,
+            2px calc(100% - 2px),
+            0 calc(100% - 2px),
+            0 2px,
+            2px 2px);
+}
+
+.pokemon-detail__info-line__content {
+    display: flex;
+    background-color: #F8F0E8;
+    flex-grow: 1;
+    justify-content: start;
+    align-items: center;
+    width: 80%;
+    height: 100%;
+    padding: 0 12px;
+    clip-path: polygon(2px 0,
+            calc(100% - 2px) 0,
+            calc(100% - 2px) 2px,
+            100% 2px,
+            100% calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 2px),
+            calc(100% - 2px) 100%,
+            2px 100%,
+            2px calc(100% - 2px),
+            0 calc(100% - 2px),
+            0 2px,
+            2px 2px);
+    text-transform: uppercase;
+}

@@ -53,27 +53,7 @@
     background: #D03E2A;
     height: 12px;
     width: 20px;
-    clip-path: polygon(0 0,
-            0 0,
-            18px 0,
-            18px 2px,
-            16px 2px,
-            16px 4px,
-            14px 4px,
-            14px 6px,
-            12px 6px,
-            12px 8px,
-            10px 8px,
-            10px 10px,
-            8px 10px,
-            8px 8px,
-            6px 8px,
-            6px 6px,
-            4px 6px,
-            4px 4px,
-            2px 4px,
-            2px 2px,
-            0 2px);
+    clip-path: var(--arrow-down);
     animation: bounce-arrow 0.5s linear infinite;
 }
 

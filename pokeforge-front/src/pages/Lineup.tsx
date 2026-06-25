@@ -50,7 +50,7 @@ const Lineup = () => {
     }
 
     return (
-        <div className="lineup w-1/2 h-full min-w-[600px] mx-auto rounded-md">
+        <div className="lineup">
             <div className="flex flex-col relative h-full p-[12px] z-10">
                 <div className="flex flex-1">
                     {pokemonList.length > 0 && !!pokemonList[0] && (

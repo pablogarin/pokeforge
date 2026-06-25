@@ -86,6 +86,7 @@ query {
 export const queryGetMyCollection = `
 query {
   getMyCollection {
+    id
     customNickname
     level
     gender
@@ -111,16 +112,55 @@ query {
     pokemonReference {
       id
       name
+      types
       speciesId
     }
   }
+}`;
+
+export const queryFetchUserPokemon = `
+query GetUserPokemon($pokemonId: Int!) {
+    getUserPokemon(pokemonId: $pokemonId) {
+        id
+        customNickname
+        level
+        gender
+        nature
+        isInRooster
+        currentHp
+        currentAttack
+        currentDefense
+        currentSpDefense
+        currentSpeed
+        ivRangeHp
+        ivRangeAttack
+        ivRangeDefense
+        ivRangeSpAttack
+        ivRangeSpDefense
+        ivRangeSpeed
+        knownMoves {
+          name
+          type
+          power
+          pp
+        }
+        pokemonReference {
+          id
+          name
+          types
+          height
+          weight
+          speciesId
+        }
+      }
 }`;
 
 const typeMap = {
     'getGlobalPokedex': 'Pokemon[]',
     'getGlobalMoves': 'Move[]',
     'getPokemonByName': 'Pokemon[]',
-    'getMyCollection': 'UserPokemon[]'
+    'getMyCollection': 'UserPokemon[]',
+    'getUserPokemon': 'UserPokemon'
 }
 
 type GraphQLResponse = {
@@ -128,6 +168,7 @@ type GraphQLResponse = {
     getGlobalMoves?: Move[];
     getPokemonByName?: Pokemon[];
     getMyCollection?: UserPokemon[];
+    getUserPokemon?: UserPokemon;
 }
 
 export function useGraphQL<T = any>() {

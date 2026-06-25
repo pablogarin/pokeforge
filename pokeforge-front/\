@@ -1,13 +1,16 @@
+import { useState } from 'react'
 import { useAuth } from './context/AuthContext';
+import { type PanelView, PANEL_VIEW } from './types/navigation';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import Login from './pages/Login';
 import Pokedex from './pages/Pokedex';
-import PokemonDetail from './pages/PokemonDetail';
 import Lineup from './pages/Lineup';
+import IVCalculator from './pages/IVCalculator';
 import Header from './components/header';
 import { Loader2 } from 'lucide-react';
 
 function App() {
+    const [panel, setPanel] = useState<PanelView>(PANEL_VIEW.lineup);
     const { user, isAuthenticated, isLoading, logout } = useAuth();
 
     if (isLoading) {
@@ -25,18 +28,20 @@ function App() {
     }
     return (
         <div className="flex flex-col h-screen">
-            <BrowserRouter>
-                <Header />
-                <div className="flex flex-1 px-12 pb-4 pt-28 overflow-hidden">
-                    <div className="flex flex-1 p-6 bg-slate-800 overflow-hidden rounded-xl">
+            <Header panel={panel} onSelect={setPanel} />
+            <div className="flex flex-1 px-12 pb-4 pt-28 overflow-hidden">
+                <div className="flex flex-1 p-6 bg-slate-800 overflow-hidden rounded-xl">
+                    <BrowserRouter>
                         <Routes>
-                            <Route path="/" element={<Lineup />} />
-                            <Route path="/pokedex" element={<Pokedex />} />
-                            <Route path="/pokemon/:id" element={<PokemonDetail />} />
-                        </Routes>
-                    </div>
-                </div>
-            </BrowserRouter>
+                            <Route path="/" element={<Lineup} />
+                        </Route>
+                        <Route path="/pokedex">
+                            <Pokedex />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </div>
+        </div>
         </div >
     )
 }

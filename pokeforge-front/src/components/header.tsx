@@ -1,14 +1,22 @@
-import React from 'react';
-import { type PanelView, PANEL_VIEW } from '../types/navigation';
+import { Link, useMatch } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { Zap } from 'lucide-react'
 
-interface HeaderProps {
-    panel: string;
-    onSelect: React.Dispatch<React.SetStateAction<PanelView>>;
+type NavItemProps = {
+    to: string;
+    label: string;
 }
 
-const Header = ({ panel, onSelect }: HeaderProps) => {
+const NavItem = ({ to, label }: NavItemProps) => {
+    const activePanel = useMatch({ path: to, end: true });
+    return (
+        <li className={`font-bold ${activePanel ? "text-amber-400" : ""}`} >
+            <Link to={to}>{label}</Link>
+        </li >
+    );
+}
+
+const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
 
     return (
@@ -18,15 +26,8 @@ const Header = ({ panel, onSelect }: HeaderProps) => {
                 <div className="bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent pl-4">PokeForge</div>
             </div>
             <ul className="flex gap-x-6 text-sm font-medium">
-                <li className={panel == PANEL_VIEW.lineup && "font-bold text-amber-400"}>
-                    <a href="#lineup" onClick={() => onSelect(PANEL_VIEW.lineup)}>My Team</a>
-                </li>
-                <li className={panel == PANEL_VIEW.pokedex && "font-bold text-amber-400"}>
-                    < a href="#pokedex" onClick={() => onSelect(PANEL_VIEW.pokedex)}>PokeDex</a>
-                </li>
-                <li className={panel == PANEL_VIEW.calculator && "font-bold text-amber-400"}>
-                    <a href="#calculator" onClick={() => onSelect(PANEL_VIEW.calculator)}>IV Calculator</a>
-                </li>
+                <NavItem to="/" label="My Team" />
+                <NavItem to="/pokedex" label="PokeDex" />
                 {isAuthenticated && (
                     <li>
                         <button onClick={() => { logout() }}>Logout</button>

@@ -66,14 +66,31 @@ const SelectField = <T,>({ name, label, data, multi, placeholder, onOptionSelect
             onBlur={() => setShowOptions(false)}
         >
             <label htmlFor="pokemon">{label}</label>
-            <input
-                {...inputProps}
-                className="pokemon-form__input"
-                name={name}
-                type="text"
-                autoComplete="off"
-                onChange={searchInputChange}
-                placeholder={placeholder} />
+            <div className="pokemon-form__dropdown-container">
+                <input
+                    {...inputProps}
+                    className="pokemon-form__input"
+                    name={name}
+                    type="text"
+                    autoComplete="off"
+                    onChange={searchInputChange}
+                    placeholder={placeholder} />
+                {
+                    !!showOptions && !!filteredList && (
+                        <div className={`pokemon-form__input-dropdown-container ${className}`}>
+                            <div className="pokemon-form__input-dropdown">
+                                {filteredList.map((option: SelectFieldOption<T>) => (
+                                    <div
+                                        className="pokemon-form__input-dropdown__item"
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        onClick={() => handleOptionSelection(option.value)}
+                                    >{option.text}{isSelected(option) && "✓"}</div>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                }
+            </div>
             {multi?.length > 0 && (
                 <div className="pokemon-form__input-dropdown__selected-item-container" >
                     {
@@ -85,21 +102,6 @@ const SelectField = <T,>({ name, label, data, multi, placeholder, onOptionSelect
                     }
                 </div>
             )
-            }
-            {
-                !!showOptions && !!filteredList && (
-                    <div className={`pokemon-form__input-dropdown-container ${className}`}>
-                        <div className="pokemon-form__input-dropdown">
-                            {filteredList.map((option: SelectFieldOption<T>) => (
-                                <div
-                                    className="pokemon-form__input-dropdown__item"
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => handleOptionSelection(option.value)}
-                                >{option.text}{isSelected(option) && "✓"}</div>
-                            ))}
-                        </div>
-                    </div>
-                )
             }
         </div >
     );
