@@ -8,6 +8,7 @@ from .resolvers import (
     resolve_search_pokemon,
     resolve_user,
     resolve_global_moves,
+    resolve_pokemon_from_collection,
 )
 from .mutations import Mutation
 from .graphql_context import GraphQLContext
@@ -22,6 +23,9 @@ class Query:
         resolver=resolve_my_collection
     )
     getUserInfo: User = strawberry.field(resolver=resolve_user)
+    getUserPokemon: UserPokemon = strawberry.field(
+        resolver=resolve_pokemon_from_collection
+    )
     getPokemonByName: List[GlobalPokemon] = strawberry.field(
         resolver=resolve_search_pokemon
     )

@@ -123,6 +123,11 @@ QUERY_SELECT_ALL_USER_POKEMON = (
     f"WHERE {USER_POKEMON_USER_ID_FIELD} = %s "
     f"ORDER BY {USER_POKEMON_ORDER_BY} ASC"
 )
+QUERY_SELECT_USER_POKEMON_BY_ID = (
+    f"SELECT * FROM {USER_POKEMON_TABLE} "
+    f"WHERE {USER_POKEMON_USER_ID_FIELD} = %s AND "
+    f"{USER_POKEMON_ID_FIELD} = %s"
+)
 QUERY_SELECT_ROOSTER_USER_POKEMON = (
     f"SELECT * FROM {USER_POKEMON_TABLE} "
     f"WHERE {USER_POKEMON_USER_ID_FIELD} = %s "
@@ -164,6 +169,14 @@ class PokemonRepository:
                         row["types"]
                     )
             return rows
+
+    @staticmethod
+    def fetch_user_pokemon(pokemon_id: int, user_id: int) -> Optional[Dict]:
+        with get_db_cursor() as cursor:
+            cursor.execute(QUERY_SELECT_USER_POKEMON_BY_ID, (user_id, pokemon_id))
+            print(QUERY_SELECT_USER_POKEMON_BY_ID, (user_id, pokemon_id))
+            row = cursor.fetchone()
+            return row
 
     @staticmethod
     def fetch_pokemon_by_id(pokemon_id: int) -> Optional[Dict]:

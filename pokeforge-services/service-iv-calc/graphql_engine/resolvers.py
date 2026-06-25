@@ -1,5 +1,5 @@
 from strawberry.types import Info
-from typing import List
+from typing import Dict, List, Optional
 from .types import GlobalPokemon, Move, UserPokemon, User
 from database import PokemonRepository
 
@@ -26,6 +26,47 @@ def resolve_global_pokedex() -> List[GlobalPokemon]:
         )
         for row in rows
     ]
+
+
+def getUserPokemonFromDict(data: Dict) -> UserPokemon:
+    return UserPokemon(
+        id=data["id"],
+        user_id=data["user_id"],
+        pokemon_id=data["pokemon_id"],
+        custom_nickname=data["custom_nickname"] if data["custom_nickname"] else None,
+        level=data["level"],
+        gender=data["gender"],
+        nature=data["nature"],
+        is_in_rooster=data["is_in_rooster"],
+        current_hp=data["current_hp"],
+        current_attack=data["current_attack"],
+        current_defense=data["current_defense"],
+        current_sp_attack=data["current_sp_attack"],
+        current_sp_defense=data["current_sp_defense"],
+        current_speed=data["current_speed"],
+        iv_range_hp=data["iv_range_hp"],
+        iv_range_attack=data["iv_range_attack"],
+        iv_range_defense=data["iv_range_defense"],
+        iv_range_sp_attack=data["iv_range_sp_attack"],
+        iv_range_sp_defense=data["iv_range_sp_defense"],
+        iv_range_speed=data["iv_range_speed"],
+        known_move_ids=data["known_move_ids"],
+    )
+
+
+def resolve_pokemon_from_collection(
+    info: Info, pokemon_id: int
+) -> Optional[UserPokemon]:
+    user_id = info.context.user_id
+
+    if not user_id:
+        raise Exception("Not Authorized")
+
+    pokemon = PokemonRepository.fetch_user_pokemon(
+        pokemon_id=pokemon_id, user_id=user_id
+    )
+    if pokemon:
+        return getUserPokemonFromDict(data=pokemon)
 
 
 def resolve_my_collection(
